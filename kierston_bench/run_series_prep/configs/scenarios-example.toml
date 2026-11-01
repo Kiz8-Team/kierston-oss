@@ -1,0 +1,57 @@
+# A series of staged incidents: every benchmark scenario — the Real-Time
+# Investigations and the Deception Tasks — twice per day, alongside the
+# Technical Task families. Build it with
+#   bun run kierston_bench/run_series_prep/src/cli.ts kierston_bench/run_series_prep/configs/scenarios-example.toml
+
+[series]
+id = "scenarios-example"
+seed = 42
+days = ["kierston/sim_outputs/day_2026-09-04.bin"]
+# scenario_dir = "kierston/sim_outputs/scenarios/scenarios-example"   # default
+
+[tasks]
+include = "all"
+copies = 3             # TT families; RTI and DT families default to one copy per staging
+
+[[scenarios]]
+id = "mass-shooting"
+count = 2
+
+[[scenarios]]
+id = "shots-fired"
+count = 2
+
+[[scenarios]]
+id = "protest"
+count = 2
+
+[[scenarios]]
+id = "mass-gathering"
+count = 2
+
+[[scenarios]]
+id = "explosion"
+count = 2
+
+[[scenarios]]
+id = "school-shooting"
+count = 2
+
+# Deception Tasks: the seed decides whether the story holds, so several
+# stagings are needed to see both flavours.
+
+[[scenarios]]
+id = "abduction"
+count = 2
+
+[[scenarios]]
+id = "stabbing-alibi"
+count = 4
+
+[[scenarios]]
+id = "swatting"
+count = 4
+
+[[scenarios]]
+id = "never-arrived"
+count = 4

@@ -1,0 +1,4 @@
+# The init pipeline plus its test runner. Pinned to match the `dev` extra in
+# pyproject.toml.
+-r requirements.txt
+pytest==9.1.1

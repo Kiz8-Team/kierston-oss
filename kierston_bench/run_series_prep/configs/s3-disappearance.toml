@@ -1,0 +1,15 @@
+# One disappearance task on the 06.10.2026 re-export of 09-05, for model sweeps.
+[series]
+id = "s3-disappearance"
+seed = 99
+days = ["kierston/sim_outputs/day_2026-09-05.bin"]
+
+[tasks]
+include = ["disappearance"]
+exclude = []
+copies = 1
+attempts_per_copy = 15
+
+[[scenarios]]
+id = "never-arrived"
+count = 1

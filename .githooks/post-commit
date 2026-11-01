@@ -1,0 +1,8 @@
+#!/bin/sh
+# Stamps the README with the engine version after an engine commit, as a
+# follow-up commit of its own. See kierston/sim/scripts/stamp-readme-version.ts
+# for why this is post-commit rather than pre-commit. A post-commit hook cannot
+# fail the commit it follows, so a missing bun just skips the stamp.
+command -v bun >/dev/null 2>&1 || exit 0
+root=$(git rev-parse --show-toplevel)
+bun run "$root/kierston/sim/scripts/stamp-readme-version.ts" || true

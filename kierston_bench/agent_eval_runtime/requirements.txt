@@ -1,0 +1,5 @@
+# Analytical baseline available inside the evaluation container.
+numpy
+pandas
+pyarrow
+duckdb

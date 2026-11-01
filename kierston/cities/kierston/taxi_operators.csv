@@ -1,0 +1,3 @@
+id_offset,name,kind,legal_form,site,fallback_lat,fallback_lon,fallback_floor
+100,Kierston Taxi LLC,taxi,llc,way/799510247,40.605619,-75.469433,3207
+101,Lehigh Valley Cab LLC,taxi,llc,way/1305340208,40.621375,-75.449027,935

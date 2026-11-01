@@ -1,0 +1,39 @@
+{
+ "iceberg": 1,
+ "kind": "roster",
+ "source": "roster",
+ "recordedAt": "2026-08-03T10:32:11.257Z",
+ "provenance": {
+  "populationDigest": "e8edb5616b1437c9",
+  "seed": 20260728,
+  "dates": [
+   "2026-07-27",
+   "2026-07-31"
+  ],
+  "sample": "stride-400-plus-coordinated-roles"
+ },
+ "metrics": {
+  "roster.trips": {
+   "t": "num",
+   "n": 802,
+   "nulls": 0,
+   "min": 0,
+   "max": 7,
+   "mean": 1.9788,
+   "sd": 1.5802,
+   "sum": 1587,
+   "zeros": 229,
+   "negatives": 0,
+   "q": [
+    0,
+    0,
+    0,
+    2,
+    3,
+    5,
+    6
+   ],
+   "exact": true
+  }
+ }
+}

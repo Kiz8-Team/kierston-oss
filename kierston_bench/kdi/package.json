@@ -1,0 +1,22 @@
+{
+  "name": "@kierston-bench/kdi",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "catalog": "bun run src/cli.ts catalog",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clickhouse/client": "^1.23.1",
+    "cli-table3": "^0.6.5",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "@types/node": "^26.0.0",
+    "@types/pg": "^8.15.5",
+    "typescript": "^5.9.0"
+  }
+}

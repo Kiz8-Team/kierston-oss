@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Manage the Kierston evaluation environment.
+#
+#   evalenv build              build the image
+#   evalenv service            run the KDI service on the host (foreground)
+#   evalenv run [name]         start an interactive container (default name: kierston-eval);
+#                              mounts $PI_AGENT_DIR (default ~/.claude/agent) for pi's OAuth tokens
+#   evalenv exec [name] cmd..  run a command inside a running container
+#   evalenv shell [name]       open a shell in a running container
+#   evalenv check [name]       verify the container can reach the KDI service
+#   evalenv stop [name]        stop and remove a container
+#   evalenv clean              remove the image
+#
+# Each container gets its own work directory under agent_eval_runtime/work/<name>,
+# mounted at /work. Nothing else from the host is mounted.
+set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+IMAGE="${EVALENV_IMAGE:-kierston-eval-env}"
+SERVICE_PORT="${KDI_SERVICE_PORT:-8765}"
+PI_AGENT_DIR="${PI_AGENT_DIR:-$HOME/.claude/agent}"
+
+usage() { sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; }
+
+name_or_default() { echo "${1:-kierston-eval}"; }
+
+cmd_build() {
+  [ -x "$HERE/pi/pi" ] || { echo "no $HERE/pi/pi; run agent_eval_runtime/build-pi.sh first (see README)" >&2; exit 1; }
+  docker build --build-arg "PI_VERSION=$(jq -r .version "$HERE/pi/package.json" 2>/dev/null || echo unknown)" -t "$IMAGE" "$HERE"
+}
+
+cmd_service() { exec bun run "$HERE/kdi_service.ts"; }
+
+cmd_run() {
+  local name; name="$(name_or_default "${1:-}")"; shift || true
+  local work="$HERE/work/$name"
+  mkdir -p "$work"
+  local agent=()
+  [ -d "$PI_AGENT_DIR" ] && agent=(-v "$PI_AGENT_DIR:/opt/pi-agent" -e PI_CODING_AGENT_DIR=/opt/pi-agent)
+  docker run -it --rm \
+    --name "$name" \
+    --hostname "$name" \
+    --add-host=host.docker.internal:host-gateway \
+    -e "AU=http://host.docker.internal:$SERVICE_PORT" \
+    -v "$work:/work" \
+    "${agent[@]}" \
+    "$IMAGE" "$@"
+}
+
+cmd_exec() {
+  local name; name="$(name_or_default "${1:-}")"; shift || true
+  docker exec -it "$name" "$@"
+}
+
+cmd_shell() { cmd_exec "$(name_or_default "${1:-}")" bash; }
+
+cmd_check() {
+  local name; name="$(name_or_default "${1:-}")"
+  docker exec "$name" kdi health
+}
+
+cmd_stop() { docker rm -f "$(name_or_default "${1:-}")"; }
+
+cmd_clean() { docker rmi "$IMAGE"; }
+
+case "${1:-}" in
+  build|service|run|exec|shell|check|stop|clean) cmd="$1"; shift; "cmd_$cmd" "$@" ;;
+  *) usage; exit 1 ;;
+esac

@@ -1,0 +1,59 @@
+{
+ "iceberg": 1,
+ "kind": "activities",
+ "source": "activities",
+ "recordedAt": "2026-08-03T10:32:11.342Z",
+ "provenance": {
+  "populationDigest": "e8edb5616b1437c9",
+  "seed": 20260728,
+  "dates": [
+   "2026-07-27",
+   "2026-07-31"
+  ],
+  "sample": "stride-400-plus-coordinated-roles"
+ },
+ "metrics": {
+  "activities.purpose": {
+   "t": "cat",
+   "n": 425,
+   "distinct": 13,
+   "counts": {
+    "food-quick": 86,
+    "convenience": 62,
+    "grocery": 58,
+    "retail": 47,
+    "food-sit": 43,
+    "cafe": 41,
+    "bar": 31,
+    "park": 22,
+    "pharmacy": 15,
+    "errand": 9,
+    "personal": 8,
+    "vehicle": 2,
+    "health": 1
+   }
+  },
+  "activities.dwell": {
+   "t": "num",
+   "n": 425,
+   "nulls": 0,
+   "min": 0,
+   "max": 423,
+   "mean": 53.5835,
+   "sd": 57.8716,
+   "sum": 22773,
+   "zeros": 1,
+   "negatives": 0,
+   "q": [
+    3,
+    4,
+    14,
+    36,
+    73,
+    172,
+    274
+   ],
+   "exact": true
+  }
+ }
+}

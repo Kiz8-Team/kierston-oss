@@ -1,0 +1,182 @@
+{
+ "iceberg": 1,
+ "kind": "scheduler",
+ "source": "scheduler",
+ "recordedAt": "2026-08-03T10:32:53.368Z",
+ "provenance": {
+  "populationDigest": "e8edb5616b1437c9",
+  "seed": 20260728,
+  "dates": [
+   "2026-07-27",
+   "2026-07-31"
+  ],
+  "sample": "stride-400-plus-coordinated-roles"
+ },
+ "metrics": {
+  "scheduler.trips": {
+   "t": "num",
+   "n": 802,
+   "nulls": 0,
+   "min": 0,
+   "max": 7,
+   "mean": 1.9788,
+   "sd": 1.5802,
+   "sum": 1587,
+   "zeros": 229,
+   "negatives": 0,
+   "q": [
+    0,
+    0,
+    0,
+    2,
+    3,
+    5,
+    6
+   ],
+   "exact": true
+  },
+  "scheduler.duration": {
+   "t": "num",
+   "n": 1340,
+   "nulls": 0,
+   "min": 285,
+   "max": 702,
+   "mean": 554.8679,
+   "sd": 82.6648,
+   "sum": 743523,
+   "zeros": 0,
+   "negatives": 0,
+   "q": [
+    374,
+    420,
+    494,
+    554,
+    614,
+    702,
+    702
+   ],
+   "exact": true
+  },
+  "scheduler.mode": {
+   "t": "cat",
+   "n": 1587,
+   "distinct": 7,
+   "counts": {
+    "car": 1117,
+    "walk": 231,
+    "passenger": 98,
+    "transit": 97,
+    "other": 18,
+    "bus": 13,
+    "taxi": 13
+   }
+  },
+  "scheduler.purpose": {
+   "t": "cat",
+   "n": 1587,
+   "distinct": 6,
+   "counts": {
+    "home": 732,
+    "stop": 423,
+    "work": 220,
+    "school": 84,
+    "affiliation": 78,
+    "escort": 50
+   }
+  },
+  "scheduler.drivenKm": {
+   "t": "num",
+   "n": 802,
+   "nulls": 0,
+   "min": 0,
+   "max": 36.510000000000005,
+   "mean": 4.7685,
+   "sd": 6.8863,
+   "sum": 3824.36,
+   "zeros": 427,
+   "negatives": 0,
+   "q": [
+    0,
+    0,
+    0,
+    0,
+    8.35,
+    19.14,
+    28.02
+   ],
+   "exact": true
+  },
+  "scheduler.walkedKm": {
+   "t": "num",
+   "n": 802,
+   "nulls": 0,
+   "min": 0,
+   "max": 20.880000000000003,
+   "mean": 0.4523,
+   "sd": 1.7091,
+   "sum": 362.768,
+   "zeros": 343,
+   "negatives": 0,
+   "q": [
+    0,
+    0,
+    0,
+    0.036,
+    0.133,
+    2.14,
+    9.77
+   ],
+   "exact": true
+  },
+  "scheduler.late": {
+   "t": "num",
+   "n": 802,
+   "nulls": 0,
+   "min": 0,
+   "max": 37,
+   "mean": 0.6334,
+   "sd": 2.1205,
+   "sum": 508,
+   "zeros": 624,
+   "negatives": 0,
+   "q": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    3,
+    9
+   ],
+   "exact": true
+  },
+  "scheduler.timeline.overlap": {
+   "t": "invariant",
+   "rule": "non-travel activities do not overlap",
+   "violations": 0,
+   "checked": 1394,
+   "examples": []
+  },
+  "scheduler.leg.backwards": {
+   "t": "invariant",
+   "rule": "travel does not run backwards",
+   "violations": 0,
+   "checked": 1394,
+   "examples": []
+  },
+  "scheduler.leg.disconnected": {
+   "t": "invariant",
+   "rule": "adjacent travel remains connected",
+   "violations": 0,
+   "checked": 1394,
+   "examples": []
+  },
+  "scheduler.required.rejected": {
+   "t": "invariant",
+   "rule": "required activities are never rejected",
+   "violations": 0,
+   "checked": 1394,
+   "examples": []
+  }
+ }
+}

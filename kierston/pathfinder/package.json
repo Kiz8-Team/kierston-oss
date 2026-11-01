@@ -1,0 +1,19 @@
+{
+  "name": "kierston-pathfinder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "module": "src/index.ts",
+  "scripts": {
+    "build-graph": "bun run src/build.ts",
+    "serve": "bun run src/server.ts",
+    "route": "bun run src/cli.ts",
+    "bench": "bun run src/bench.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "typescript": "^7.0.2"
+  }
+}

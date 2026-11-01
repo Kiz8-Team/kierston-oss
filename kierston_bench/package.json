@@ -1,0 +1,17 @@
+{
+  "name": "kierston-bench",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "kdi": "bun run kdi/src/cli.ts",
+    "test": "bun test kdi/test task_generators/test task_generators/src run_series_prep/test eval_runner/test scoring/test bench_cli/test agent_eval_runtime/test",
+    "typecheck": "cd kdi && bun run typecheck && cd ../task_generators && bun run typecheck && cd ../run_series_prep && bun run typecheck && cd ../eval_runner && bun run typecheck && cd ../scoring && bun run typecheck && cd ../bench_cli && bun run typecheck",
+    "run-series-prep": "bun run run_series_prep/src/cli.ts",
+    "kdi-service": "bun run agent_eval_runtime/kdi_service.ts",
+    "evalenv": "agent_eval_runtime/evalenv",
+    "build-pi": "agent_eval_runtime/build-pi.sh",
+    "eval-runner": "bun run eval_runner/src/cli.ts",
+    "score": "bun run scoring/src/cli.ts",
+    "bench": "bun run bench_cli/src/cli.ts"
+  }
+}

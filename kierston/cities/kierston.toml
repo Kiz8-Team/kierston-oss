@@ -1,0 +1,89 @@
+# Kierston — the city the engine ships with.
+#
+# Select it with KIERSTON_CITY=<slug>; the default is `kierston`.
+
+[city]
+name = "Kierston"
+slug = "kierston"
+
+# The extract the city is cut from. No municipal boundary is applied — the
+# whole radius is treated as one city, which is why Allentown proper is only
+# the calibration baseline and the Whitehall/Catasauqua stock is extrapolated
+# into the same place.
+[extent]
+center = [40.602989, -75.472188]
+radius_m = 5000
+
+# The microdata the population is cloned from. `acquire/fetch_pums.py` reads
+# these to pull the sample; nothing in the pipeline re-queries.
+[microdata]
+dataset = "acs5"
+vintage = 2023
+state = "42"
+puma = ["02803"]
+
+# Which legal system the records are filed under: offence codes, sentencing
+# grades, court structure. Resolves to `jurisdictions/<profile>/`.
+[jurisdiction]
+profile = "us-pa"
+
+# The city's local particulars: its clock, its "now", its telephone numbering
+# and the offices and firms its records are issued by. Long lists live beside
+# this file in `cities/<slug>/*.csv` — see kierston/init/city_data.py for which is which.
+[locale]
+# IANA zone the city keeps. Published to sim_data/city.json, where Fastgate,
+# the scenario tools and anything else stamping wall-clock time read it.
+time_zone = "America/New_York"
+# Simulation "now". Every age, issue date, expiry and docket year is measured
+# from here; moving it moves the whole city in time.
+reference_date = 2026-07-01
+# The downtown square the rent model measures distance from. Not the extract
+# centre above: that is where the cut was made, this is where rents peak.
+centre = [40.6023, -75.4714]
+# How the incorporated city is written in a street address. A facility whose
+# address names it is inside the city line; the outlying ones are not.
+postal_city = "Allentown"
+# The county the city sits in, which names the sheriff, the recorder of deeds,
+# the treasurer and the jail.
+county = "Lehigh County"
+# The county's Court of Common Pleas judicial district, and the division of
+# the federal district court that sits here (the docket prefix before the colon).
+judicial_district = "39"
+federal_division = "5"
+# The county sheriff's licence-to-carry numbering: prefix and where this
+# build's sequence starts.
+carry_licence_prefix = "LC"
+carry_licence_series_start = 84000
+# Area codes in the order the exchange table and the eras below use them.
+# Exchanges per code are in `kierston/exchanges.csv`.
+area_codes = ["610", "484", "835"]
+
+# Which area code a number first assigned before `before` came from, as
+# shares over `area_codes`. The first era whose bound the year falls under wins.
+[[locale.area_code_eras]]
+before = 1999
+shares = [1.00, 0.00, 0.00]
+[[locale.area_code_eras]]
+before = 2010
+shares = [0.55, 0.45, 0.00]
+[[locale.area_code_eras]]
+before = 2025
+shares = [0.42, 0.58, 0.00]
+[[locale.area_code_eras]]
+before = 9999
+shares = [0.34, 0.58, 0.08]
+
+# Dwelling-stock estimation. Everything the local OSM sample can answer is
+# fitted from it at intake — see `init/intake/fit.py`. What is set here is the
+# part no sample answers.
+[housing]
+# Minimum tagged buildings before a fitted value is trusted. Below it the
+# engine falls back to the value measured on Kierston, which is the only stock
+# anyone has measured yet.
+min_sample = 10
+# Apartment blocks OSM gives no height for at all. Not a measurement: the
+# sample that would fit it is the one that is missing.
+flats_default = 4
+# Flats per level above where the tagged sample supports a per-level median.
+# A judgement, not a fit — see `fit.py` for what the data actually says.
+flats_per_tall_level = 12

@@ -1,0 +1,24 @@
+name: Full city
+description: Restore the full city from the cache, or build it. Needs the toolchain.
+
+runs:
+  using: composite
+  steps:
+    - name: Cache the built city
+      id: city
+      uses: actions/cache@v4
+      with:
+        path: kierston/sim_data
+        key: city-full-${{ hashFiles('kierston/init-inputs.tar.zst', 'kierston/requirements.txt', 'kierston/init/**/*.py', 'kierston/cities/**', 'kierston/jurisdictions/*/jurisdiction.toml', 'kierston/pathfinder/src/**') }}
+
+    - name: Build the city
+      if: steps.city.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        kierston/.venv/bin/python kierston/init/init_sim.py
+        (cd kierston/pathfinder && bun run build-graph)
+
+    # The city suites skip themselves when sim_data is missing; fail instead.
+    - name: Check built city
+      shell: bash
+      run: test -s kierston/sim_data/sim_init.bin && test -s kierston/sim_data/car_graph.bin

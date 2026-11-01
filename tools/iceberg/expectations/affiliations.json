@@ -1,0 +1,29 @@
+{
+ "iceberg": 1,
+ "kind": "affiliations",
+ "source": "affiliations",
+ "recordedAt": "2026-08-03T10:32:11.481Z",
+ "provenance": {
+  "populationDigest": "e8edb5616b1437c9",
+  "seed": 20260728,
+  "dates": [
+   "2026-07-27",
+   "2026-07-31"
+  ],
+  "sample": "stride-400-plus-coordinated-roles"
+ },
+ "metrics": {
+  "affiliations.class": {
+   "t": "cat",
+   "n": 80,
+   "distinct": 5,
+   "counts": {
+    "gym": 34,
+    "worship": 24,
+    "sports": 15,
+    "civic": 5,
+    "youth": 2
+   }
+  }
+ }
+}

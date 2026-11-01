@@ -1,0 +1,54 @@
+sector,name
+AGR,Lehigh Valley Produce Co.
+AGR,Saucon Field Farms LLC
+AGR,Kierston Grange Growers
+EXT,Blue Mountain Aggregates LLC
+EXT,Lehigh Quarry Holdings
+CON,Hamilton Street Contracting LLC
+CON,Cedar Crest Builders Inc.
+CON,Jordan Creek Mechanical LLC
+CON,Union Boulevard Roofing Co.
+MFG,Kierston Precision Works Inc.
+MFG,Lehigh Forge & Tool LLC
+MFG,Allen Packaging Industries
+MFG,South Side Fabricators Inc.
+WHL,Keystone Distribution Partners LLC
+WHL,Airport Road Wholesale Co.
+RET,Hamilton Retail Group LLC
+RET,Seventh Street Trading Co.
+RET,Kierston Mercantile Inc.
+TRN,Lehigh Freight Lines LLC
+TRN,Valley Transit Services Inc.
+TRN,MacArthur Logistics Co.
+UTL,Kierston Municipal Utilities
+UTL,Lehigh Power & Light Co.
+INF,Little Lehigh Media LLC
+INF,Kierston Broadcasting Inc.
+FIN,Penn Ridge Financial Group LLC
+FIN,Kierston Trust & Advisory
+FIN,Hamilton Underwriters Inc.
+PRF,Cedar Crest Consulting LLC
+PRF,Allen & Vance Professional Services
+PRF,Lehigh Analytics Partners LLC
+EDU,Kierston Area School District
+EDU,Lehigh Valley Learning Trust
+MED,Kierston Regional Health System
+MED,Valley Care Partners LLC
+MED,Hamilton Medical Associates
+SCA,Kierston Community Services Inc.
+SCA,Lehigh Family Support Network
+ENT,Riverfront Entertainment LLC
+ENT,Kierston Arts Collective
+SRV,Hamilton Street Services LLC
+SRV,Valley Hospitality Group Inc.
+SRV,Kierston Facilities Management LLC
+ADM,City of Kierston Payroll
+ADM,Lehigh County Treasurer
+ADM,Commonwealth of Pennsylvania
+MIL,Defense Finance and Accounting Service
+benefit:social_security,Social Security Administration
+benefit:ssi,Social Security Administration
+benefit:unemployment,PA Department of Labor & Industry
+benefit:public_assistance,PA Department of Human Services
+benefit:pension,Commonwealth of Pennsylvania Retirement Board
+fallback,Kierston Business Services LLC

@@ -1,0 +1,9 @@
+#!/usr/bin/env bun
+// iceberg — the entry point. See src/cli.ts for what it does.
+//
+// JavaScript rather than a shell wrapper so that both ways of reaching it
+// work: `tools/iceberg/iceberg check …` runs it through the shebang, and
+// `bun run tools/iceberg/iceberg check …` parses it as a module. A bash
+// wrapper is fine for the first and a syntax error for the second, and the
+// second is what anyone already using bun for this repo will type.
+import "./src/cli.ts";

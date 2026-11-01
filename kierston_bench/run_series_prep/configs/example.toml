@@ -1,0 +1,27 @@
+# A run series: the fixed set of tasks one benchmark run is made of.
+# Build it with
+#   bun run kierston_bench/run_series_prep/src/cli.ts kierston_bench/run_series_prep/configs/example.toml
+# Relative paths are resolved from the repository root.
+
+[series]
+id = "example"
+seed = 42
+days = ["kierston/sim_outputs/day_2026-09-01.bin"]
+# sim_data = "kierston/sim_data"                 # default
+# output_dir = "kierston_bench/run_series"       # default
+
+[tasks]
+include = "all"        # or a list: ["device-to-person", "colocation"]
+exclude = []
+copies = 3             # distinct copies of each family, per day
+# attempts_per_copy = 8  # seeds tried per copy before a family is reported short
+
+[tasks.per_family]
+device-to-person = 5
+colocation = 2
+
+# [agent]
+# The shell line every task's container runs, copied onto each task as
+# `startupCommand`; without it the eval runner starts pi on the case file.
+# Everything this line sends is read by the model: keep to model_visible_text.ts wording.
+# startup_command = 'pi -p --append-system-prompt "$EC" --session-dir "$ELD" --model anthropic/claude-sonnet-5 @"$ETF" "Complete the records investigation described in the attached case file, following its instructions field."'

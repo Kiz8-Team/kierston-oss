@@ -1,0 +1,26 @@
+name: Toolchain
+description: Bun, Python, the init inputs, the venv and the Bun workspace.
+
+runs:
+  using: composite
+  steps:
+    - uses: oven-sh/setup-bun@v2
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+
+    - name: Restore init inputs
+      shell: bash
+      run: tar --zstd -xf kierston/init-inputs.tar.zst -C kierston
+
+    # The venv lives where alpr.test.ts looks for it.
+    - name: Python environment
+      shell: bash
+      run: |
+        python -m venv kierston/.venv
+        kierston/.venv/bin/python -m pip install -r kierston/requirements.txt
+
+    - name: Bun workspace
+      shell: bash
+      run: bun install --frozen-lockfile

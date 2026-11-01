@@ -1,0 +1,100 @@
+# Pennsylvania: the rules every city filed under `us-pa` shares.
+#
+# What varies by county rather than by state — the judicial district number,
+# the federal division, the sheriff's carry-licence series, the magisterial
+# courts — is in the city's own `[locale]` and `cities/<slug>/*.csv`, because
+# a second Pennsylvania city would share this file and not those numbers.
+#
+# Read by init/jurisdiction.py. Every key below is consumed by something.
+
+[state]
+# USPS code, as a plate's jurisdiction and a vehicle record's state are written.
+code = "PA"
+name = "Pennsylvania"
+# FIPS state code. PUMS writes it zero-padded to three as POBP and MIGSP; it is
+# also the SSN area block a card applied for here is drawn from.
+fips = "42"
+
+[statutes]
+# How a section of the consolidated statutes is cited on a charge.
+cite = "{title} Pa.C.S. § {section}"
+
+[corrections]
+# What a sentence to state prison names as the facility.
+state_prison = "SCI"
+
+[licensing]
+# The motor vehicle agency, by its full name on a document and its short name
+# on a bank statement.
+issuer = "Pennsylvania Department of Transportation"
+issuer_short = "PennDOT"
+# Driver licence and photo-ID numbers: eight digits, one statewide sequence.
+# Products in the low 30-millions were being issued in the mid-2020s.
+licence_series_start = 31400000
+# Licences expire on the holder's birthday; seniors renew on a shorter cycle.
+renewal_years = 4
+senior_renewal_years = 2
+senior_age = 65
+
+# Suspension length in months by the section a conviction was under.
+[licensing.suspension_months]
+"3802" = 12
+"1543" = 12
+"3742" = 12
+"3732" = 36
+"3735" = 36
+"780-113(a)(30)" = 6
+
+[plates]
+# Passenger serials run LLL-DDDD, letters consumed left-slowest, skipping I, O
+# and Q. `block_start` is the block opened in `block_year`, at
+# `blocks_per_year` blocks a year.
+letters = "ABCDEFGHJKLMNPRSTUVWXYZ"
+block_start = "LAA"
+block_year = 2021
+blocks_per_year = 3.5
+# Whether a car registered here carries a plate on the front as well.
+front = false
+# Longest personalized plate the state issues.
+personalized_max = 7
+# Where the school bus and municipal government series start.
+school_bus_series_start = 10400
+municipal_series_start = 26100
+# The annual passenger registration fee.
+registration_fee = 45.0
+
+# Where a car seen on the road but in no registry is plated, for the ALPR
+# layer: share of such vehicles and the serial the stand-in plate is written
+# in. `L` takes the next of three drawn letters and `D` the next of six drawn
+# digits; anything else is copied. A draw past the last share falls back to
+# the home state.
+[[plates.visitors]]
+jurisdiction = "PA"
+share = 0.88
+pattern = "LLL-DDDD"
+[[plates.visitors]]
+jurisdiction = "NJ"
+share = 0.07
+pattern = "LDD-LL"
+[[plates.visitors]]
+jurisdiction = "NY"
+share = 0.03
+pattern = "LLL-DDDD"
+[[plates.visitors]]
+jurisdiction = "DE"
+share = 0.01
+pattern = "DDDDDD"
+[[plates.visitors]]
+jurisdiction = "MD"
+share = 0.01
+pattern = "DLLDDDD"
+
+[firearms]
+# Licence to carry: the statute it is issued under, the minimum age and the term.
+carry_licence_statute = "18 Pa.C.S. § 6109"
+carry_licence_age = 21
+carry_licence_term_years = 5
+# Who runs the point-of-sale background check, and the form number a handgun
+# record of sale is filed under.
+background_check_agency = "Pennsylvania State Police"
+record_of_sale_form = "SP4-113"

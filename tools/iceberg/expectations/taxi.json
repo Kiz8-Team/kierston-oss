@@ -1,0 +1,127 @@
+{
+ "iceberg": 1,
+ "kind": "taxi",
+ "source": "taxi",
+ "recordedAt": "2026-08-03T10:32:53.189Z",
+ "provenance": {
+  "populationDigest": "e8edb5616b1437c9",
+  "seed": 20260728,
+  "dates": [
+   "2026-07-27",
+   "2026-07-31"
+  ],
+  "sample": "stride-400-plus-coordinated-roles"
+ },
+ "metrics": {
+  "taxi.mode": {
+   "t": "cat",
+   "n": 8876,
+   "distinct": 7,
+   "counts": {
+    "cab": 4325,
+    "taxi": 1932,
+    "walk": 1317,
+    "transit": 1003,
+    "car": 270,
+    "bus": 28,
+    "other": 1
+   }
+  },
+  "taxi.purpose": {
+   "t": "cat",
+   "n": 8876,
+   "distinct": 9,
+   "counts": {
+    "deadhead": 2423,
+    "home": 2104,
+    "fare": 1908,
+    "stop": 1664,
+    "affiliation": 380,
+    "work": 307,
+    "run": 32,
+    "escort": 31,
+    "vehicle": 27
+   }
+  },
+  "taxi.drivenKm": {
+   "t": "num",
+   "n": 1236,
+   "nulls": 0,
+   "min": 0,
+   "max": 192.34000000000006,
+   "mean": 10.0309,
+   "sd": 31.9081,
+   "sum": 12398.16,
+   "zeros": 1094,
+   "negatives": 0,
+   "q": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    98.53,
+    147.96
+   ],
+   "exact": true
+  },
+  "taxi.walkedKm": {
+   "t": "num",
+   "n": 1236,
+   "nulls": 0,
+   "min": 0,
+   "max": 9.360999999999999,
+   "mean": 1.033,
+   "sd": 1.1883,
+   "sum": 1276.772,
+   "zeros": 376,
+   "negatives": 0,
+   "q": [
+    0,
+    0,
+    0,
+    0.79,
+    1.61,
+    3.27,
+    4.94
+   ],
+   "exact": true
+  },
+  "taxi.emptyKm.share": {
+   "t": "scalar",
+   "v": 0.4399,
+   "unit": "share"
+  },
+  "taxi.fares": {
+   "t": "scalar",
+   "v": 1908,
+   "unit": "count"
+  },
+  "taxi.faresPerDriver": {
+   "t": "scalar",
+   "v": 14.7907,
+   "unit": "rate"
+  },
+  "taxi.emptyKm.range": {
+   "t": "invariant",
+   "rule": "empty taxi kilometers stay between 40% and 50%",
+   "violations": 0,
+   "checked": 1,
+   "examples": []
+  },
+  "taxi.journey.passengerDriver": {
+   "t": "invariant",
+   "rule": "every loaded driver journey has the same stable id in a passenger day",
+   "violations": 0,
+   "checked": 1908,
+   "examples": []
+  },
+  "taxi.faresPerDriver.range": {
+   "t": "invariant",
+   "rule": "working taxi drivers complete approximately 15 to 25 fares per shift",
+   "violations": 0,
+   "checked": 1,
+   "examples": []
+  }
+ }
+}

@@ -1,0 +1,29 @@
+[project]
+name = "kierston-init"
+version = "0.1.0"
+description = "Kierston's initialization pipeline: builds sim_data from a city's downloads."
+requires-python = ">=3.11"
+# Pinned to the versions the pipeline was last built with; requirements.txt
+# carries the same pins for `pip install -r`.
+dependencies = [
+  "numpy==2.5.1",
+]
+
+[project.optional-dependencies]
+# acquire/ only: fetching a new city's downloads. Mirrors requirements-acquire.txt.
+acquire = [
+  "osmnx==2.1.0",
+  "folium==0.20.0",
+]
+dev = [
+  "pytest==9.1.1",
+]
+
+# The stages import one another by bare name after a sys.path insert, so this
+# is not an installable package; the file carries metadata, pins and test
+# configuration.
+[tool.setuptools]
+packages = []
+
+[tool.pytest.ini_options]
+testpaths = ["init/tests"]

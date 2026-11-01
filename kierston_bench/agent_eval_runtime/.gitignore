@@ -1,0 +1,10 @@
+# Per-container work directories, mounted at /work.
+work/
+# Per-task KDI call logs written by the KDI service.
+kdi_log/
+# The Linux pi build, produced by build-pi.sh.
+pi/
+# Host-only capability records the runner writes for the KDI service.
+kdi_policy/
+# The scenario lock predecessor; nothing reads it any more.
+date_locks/

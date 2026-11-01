@@ -1,0 +1,88 @@
+{
+ "iceberg": 1,
+ "kind": "school",
+ "source": "school",
+ "recordedAt": "2026-08-03T10:32:11.551Z",
+ "provenance": {
+  "populationDigest": "e8edb5616b1437c9",
+  "seed": 20260728,
+  "dates": [
+   "2026-07-27",
+   "2026-07-31"
+  ],
+  "sample": "stride-400-plus-coordinated-roles"
+ },
+ "metrics": {
+  "school.mode": {
+   "t": "cat",
+   "n": 3334,
+   "distinct": 7,
+   "counts": {
+    "bus": 2193,
+    "car": 771,
+    "walk": 202,
+    "passenger": 98,
+    "transit": 53,
+    "other": 13,
+    "taxi": 4
+   }
+  },
+  "school.purpose": {
+   "t": "cat",
+   "n": 3334,
+   "distinct": 6,
+   "counts": {
+    "run": 2359,
+    "home": 513,
+    "stop": 255,
+    "school": 84,
+    "work": 70,
+    "affiliation": 53
+   }
+  },
+  "school.drivenKm": {
+   "t": "num",
+   "n": 446,
+   "nulls": 0,
+   "min": 0,
+   "max": 30.51,
+   "mean": 4.9498,
+   "sd": 6.8749,
+   "sum": 2207.63,
+   "zeros": 224,
+   "negatives": 0,
+   "q": [
+    0,
+    0,
+    0,
+    0,
+    9.02,
+    19.84,
+    25.93
+   ],
+   "exact": true
+  },
+  "school.walkedKm": {
+   "t": "num",
+   "n": 446,
+   "nulls": 0,
+   "min": 0,
+   "max": 20.880000000000003,
+   "mean": 0.6904,
+   "sd": 2.1852,
+   "sum": 307.915,
+   "zeros": 144,
+   "negatives": 0,
+   "q": [
+    0,
+    0,
+    0,
+    0.098,
+    0.288,
+    3.48,
+    11.88
+   ],
+   "exact": true
+  }
+ }
+}

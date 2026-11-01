@@ -1,0 +1,10 @@
+{
+  "refused": "{name}: request refused ({code}): {body}\n",
+  "unreachable": "{name}: service unavailable at {url}: {error}\n",
+  "placesUsage": "usage: km_search_places <latitude> <longitude> <radius-metres>",
+  "placesHelp": "Returns compact JSON with matching places sorted nearest-first.",
+  "placesNumbers": "km_search_places: coordinates and radius must be numbers\n",
+  "addressUsage": "usage: km_address_lookup \"<address or street>\" | <latitude> <longitude> [radius-metres]",
+  "addressHelp": "Reverse lookup defaults to 100 metres. Returns mapped building centroids and approximate street coordinates; no footprint containment or address interpolation.",
+  "timeUp": "Time is up. The responders need your findings now. Stop investigating: run no further record queries, and write /out/answer.json immediately from what you have established so far. Where the evidence does not settle a point, abstain on it."
+}

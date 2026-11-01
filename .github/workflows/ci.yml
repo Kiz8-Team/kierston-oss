@@ -1,0 +1,195 @@
+# A job runs only when its own part of the repository changed.
+#
+#   changes  sorts the changed files into engine, bench and kblue.
+#   engine   builds the full city from the tracked input bundle and runs the
+#            engine type checks, the init tests and the sim, pathfinder,
+#            records and iceberg tests. The sim suites pick people by id and
+#            count, so they need the whole population, not a cut-down one.
+#   bench    runs the scenario, bench and run-browser tests on the same full
+#            city.
+#   kday     builds a 4,000-household city (about 10,000 household residents)
+#            and exports one day of it. The task generators run on that day
+#            only when the bench changed; an engine change stops at the export.
+#   kblue    type-checks KierstonBlue, which has no tests of its own.
+#
+# The root manifest, the lockfile, this directory and kierston-records belong
+# to every part and start every job. A change outside all three parts (docs,
+# site-export) starts none.
+#
+# Fastgate's own tests are not run. ClickHouse is started in `bench` only
+# because the bench runner lists applied scenarios before every task.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Python block-buffers stdout when it is not a terminal; without this a
+  # step prints nothing until it ends.
+  PYTHONUNBUFFERED: "1"
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      engine: ${{ steps.filter.outputs.engine }}
+      bench: ${{ steps.filter.outputs.bench }}
+      kblue: ${{ steps.filter.outputs.kblue }}
+    steps:
+      # The filter compares against the commit before the push, which a
+      # depth-1 checkout does not have. Commits and trees are enough for it.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            shared: &shared
+              - package.json
+              - bun.lock
+              - .github/**
+              - packages/kierston-records/**
+            engine:
+              - *shared
+              - kierston/**
+              - tools/iceberg/**
+            bench:
+              - *shared
+              - packages/provider-rows/**
+              - kierston_scenarios/**
+              - kierston_bench/**
+              - fastgate/**
+              - tools/run-browser/**
+              - docker-compose.yml
+            kblue:
+              - *shared
+              - tools/kierstonblue/**
+
+  engine:
+    needs: changes
+    if: needs.changes.outputs.engine == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/toolchain
+
+      # The bench compiles against the engine's source, so its types are
+      # checked here as well; its tests are not run.
+      - name: Type check
+        run: bun run typecheck:engine && bun run typecheck:bench
+
+      - name: Boundary and locale checks
+        run: bun run check-boundaries
+
+      - name: Init tests
+        working-directory: kierston
+        run: |
+          .venv/bin/python -m pip install -r requirements-dev.txt
+          .venv/bin/python -m pytest -v
+
+      - uses: ./.github/actions/full-city
+
+      - name: Tests
+        run: >
+          bun test --timeout 180000
+          packages/kierston-records kierston/sim kierston/pathfinder tools/iceberg
+
+  bench:
+    needs: changes
+    if: needs.changes.outputs.bench == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CLICKHOUSE_URL: http://127.0.0.1:8123
+      CLICKHOUSE_DATABASE: city_data
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: kierston
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/toolchain
+
+      - name: Type check
+        run: bun run typecheck:bench
+
+      # The boundary check also covers the bench and the scenarios.
+      - name: Boundary and locale checks
+        run: bun run check-boundaries
+
+      - uses: ./.github/actions/full-city
+
+      - name: Start ClickHouse
+        run: docker compose up -d --wait clickhouse
+
+      # A rerun worker started through systemd-run does not inherit this job's
+      # environment; Fastgate then reads its credentials from .env.local.
+      - name: Write .env.local
+        run: env | grep '^CLICKHOUSE_' > .env.local
+
+      - name: Tests
+        run: >
+          bun test --timeout 180000
+          kierston_scenarios kierston_bench tools/run-browser
+
+  kday:
+    needs: changes
+    if: needs.changes.outputs.engine == 'true' || needs.changes.outputs.bench == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      KDAY_DATE: "2026-09-01"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/toolchain
+
+      - name: Build a 4,000-household city
+        run: |
+          kierston/.venv/bin/python kierston/init/init_sim.py --households 4000
+          (cd kierston/pathfinder && bun run build-graph)
+
+      - name: Export one day
+        working-directory: kierston/sim
+        run: bun run day --export-day --date "$KDAY_DATE"
+
+      # The generator suite skips itself when no day is on disk; fail instead.
+      - name: Check exported day
+        run: test -s "kierston/sim_outputs/day_${KDAY_DATE}.bin"
+
+      - name: Task generators on the exported day
+        if: needs.changes.outputs.bench == 'true'
+        run: bun test --timeout 180000 kierston_bench/task_generators/test/generators-smoke.test.ts
+
+  kblue:
+    needs: changes
+    if: needs.changes.outputs.kblue == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Bun workspace
+        run: bun install --frozen-lockfile
+
+      - name: Type check
+        run: bun run typecheck:kblue

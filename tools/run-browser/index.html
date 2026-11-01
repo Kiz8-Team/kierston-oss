@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Kierston · Runs</title>
+<style>
+/* Follows the system theme. Neither ground is pure: warm paper in light, slate
+   in dark. One blue marks selection; the other hues name a kind of turn. */
+:root{
+  --bg:#f5f3ee; --surface:#fffefb; --raised:#ece9e1; --code:#f0ede5;
+  --line:#dedad0; --line2:#c9c4b7;
+  --text:#22252a; --dim:#686c74;
+  --accent:#2456c8; --wash:#e3eafa;
+  --tool:#2456c8; --think:#7a52b3; --prompt:#9a6408; --say:#22252a;
+  --good:#1f7a4d; --bad:#b93a2e; --bad-wash:#fbe9e6; --warn:#9a6408;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  font:14px/1.5 var(--sans); font-variant-numeric:tabular-nums; color:var(--text); background:var(--bg); color-scheme:light;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1d2027; --surface:#252932; --raised:#2e333e; --code:#1a1d23;
+  --line:#343a46; --line2:#475061;
+  --text:#e4e7ec; --dim:#9aa2b0;
+  --accent:#82a8f5; --wash:#2b3650;
+  --tool:#82a8f5; --think:#b99be6; --prompt:#e0b060; --say:#e4e7ec;
+  --good:#6fcf9a; --bad:#f08a7c; --bad-wash:#3a2626; --warn:#e0b060;
+  color-scheme:dark;
+}}
+*{box-sizing:border-box}
+body{margin:0;height:100vh;overflow:hidden}
+button,input,select{font:inherit;color:inherit;background:none;border:0;border-radius:0;padding:0}
+button{cursor:pointer}
+input[type=search],select{width:100%;padding:9px 12px;outline:0}
+input::placeholder{color:var(--dim)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12.5px/1.55 var(--mono);margin:0}
+.mono{font-family:var(--mono);font-size:12.5px}
+.dim{color:var(--dim)} .bad{color:var(--bad)} .warn{color:var(--warn)}
+.small{font-size:12.5px}
+
+/* ---------- shell ---------- */
+#shell{height:100vh;display:grid;grid-template-columns:var(--c1,230px) var(--c2,300px) minmax(0,1fr)}
+#shell.hide-runs{--c1:0px} #shell.hide-tasks{--c2:0px}
+#shell.hide-runs #runsPane,#shell.hide-tasks #tasksPane{display:none}
+.pane{min-width:0;min-height:0;display:flex;flex-direction:column;border-right:1px solid var(--line);background:var(--surface)}
+.pane>.head{display:flex;border-bottom:1px solid var(--line);flex:0 0 auto}
+.pane>.head select{width:auto;border-left:1px solid var(--line);color:var(--dim)}
+.pane>.body{overflow:auto;flex:1;min-height:0}
+#detail{background:var(--bg);border-right:0}
+
+/* ---------- rails ---------- */
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 10px;width:100%;text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);line-height:1.35}
+.row:hover{background:var(--raised)}
+.row.sel{background:var(--wash);box-shadow:inset 3px 0 0 var(--accent)}
+.row .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .sub{grid-column:1/-1;color:var(--dim);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row.idle{color:var(--dim)}
+.none{color:var(--dim);padding:12px}
+
+/* ---------- detail ---------- */
+#dhead{flex:0 0 auto;border-bottom:1px solid var(--line);background:var(--surface);display:flex;align-items:stretch;min-height:40px}
+#dhead h2{font-size:14px;margin:0;font-weight:600;padding:9px 14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#dhead .facts{display:flex;gap:14px;align-items:center;color:var(--dim);white-space:nowrap;padding-right:14px}
+#dhead .facts b{color:var(--text);font-weight:600}
+#dhead .grow{flex:1}
+#focus{padding:0 12px;color:var(--dim);border-right:1px solid var(--line)} #focus:hover{color:var(--text)}
+nav{display:flex;border-left:1px solid var(--line)}
+nav button{padding:0 14px;color:var(--dim)}
+nav button:hover{color:var(--text)}
+nav button.on{color:var(--text);font-weight:600;box-shadow:inset 0 -2px 0 var(--accent)}
+#toolbar{display:flex;align-items:stretch;border-bottom:1px solid var(--line);background:var(--surface);flex:0 0 auto}
+#toolbar:empty{display:none}
+#toolbar input[type=search]{flex:1;min-width:120px;padding-left:14px}
+#toolbar select{width:auto;max-width:40ch;border-right:1px solid var(--line)}
+#toolbar button,#toolbar a,#toolbar .count{padding:0 12px;display:flex;align-items:center;color:var(--dim);border-left:1px solid var(--line)}
+#toolbar button:hover{color:var(--text)}
+#toolbar button.on{color:var(--text)}
+#toolbar button.on::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:7px}
+#content{flex:1;min-height:0;overflow:auto;padding:6px 18px 80px}
+#content.split{display:grid;grid-template-columns:minmax(180px,260px) minmax(0,1fr);padding:0}
+#content.split .filelist{border-right:1px solid var(--line);background:var(--surface);overflow:auto}
+#content.split .filebody{overflow:auto;padding:12px 18px 80px}
+.filelist button{display:block;width:100%;text-align:left;padding:6px 12px;overflow-wrap:anywhere;font:12.5px/1.4 var(--mono);color:var(--dim)}
+.filelist button:hover{color:var(--text);background:var(--raised)}
+.filelist button.on{background:var(--wash);color:var(--text);box-shadow:inset 3px 0 0 var(--accent)}
+.fmeta{display:flex;gap:12px;color:var(--dim);font-size:12.5px;margin-bottom:8px}
+
+h3{font-size:13px;font-weight:600;margin:24px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;color:var(--dim);font-weight:500;font-size:12.5px;background:var(--bg);position:sticky;top:-6px}
+td,th{padding:7px 10px 7px 0;border-bottom:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}
+td.num,th.num{text-align:right;white-space:nowrap}
+td.nowrap{white-space:nowrap}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:2px 28px;margin:0}
+.kv div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:4px 0}
+.kv dt{color:var(--dim)} .kv dd{margin:0}
+.out{background:var(--code);border-radius:5px;padding:9px 11px;margin-top:6px}
+.out.fail{background:var(--bad-wash)}
+
+/* ---------- transcript ----------
+   Each kind of turn has its own shape, so the run reads at a glance: the
+   agent's words are open prose, its reasoning an indented aside, and a tool
+   call a framed unit holding the command and what came back. */
+.session{color:var(--dim);font-size:12.5px;padding:10px 0 2px}
+.ev{margin:12px 0;max-width:1100px}
+.ev>.h{display:flex;gap:10px;align-items:baseline;cursor:pointer;user-select:none}
+.ev .tag{font-size:12px;font-weight:600;letter-spacing:.02em;flex:0 0 auto;color:var(--c)}
+.ev .sum{color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;font:12.5px/1.6 var(--mono)}
+.ev .t{color:var(--dim);font-size:12.5px;white-space:nowrap;margin-left:auto;flex:0 0 auto}
+.ev.closed>.b,.ev:not(.closed)>.h .sum{display:none}
+.ev .lbl{font-size:12px;color:var(--dim);margin:10px 0 0}
+
+.ev.say{--c:var(--good)}
+.ev.say>.b{padding-top:2px}
+.ev.say>.b pre{font:14.5px/1.6 var(--sans);max-width:85ch}
+
+.ev.think{--c:var(--think);border-left:3px solid var(--think);padding-left:12px}
+.ev.think>.b pre{font:italic 13.5px/1.6 var(--sans);color:var(--dim);max-width:85ch;padding-top:2px}
+
+.ev.tool,.ev.err,.ev.user,.ev.meta{background:var(--surface);border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.ev.tool{--c:var(--tool)} .ev.err{--c:var(--bad);border-color:var(--bad)} .ev.user{--c:var(--prompt)} .ev.meta{--c:var(--dim)}
+.ev.tool>.h,.ev.err>.h,.ev.user>.h,.ev.meta>.h{padding:7px 12px;background:var(--raised)}
+.ev.tool.closed>.h,.ev.err.closed>.h,.ev.user.closed>.h,.ev.meta.closed>.h{background:none}
+.ev.tool>.b,.ev.err>.b,.ev.user>.b,.ev.meta>.b{padding:10px 12px 12px;border-top:1px solid var(--line)}
+.ev .cmd{color:var(--text)}
+.ev .cmd::before{content:"$ ";color:var(--c);font-weight:600}
+.clip{position:relative;max-height:280px;overflow:hidden}
+.clip.open{max-height:none}
+.clip:not(.open)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:40px;background:linear-gradient(transparent,var(--code))}
+.clip.fail:not(.open)::after{background:linear-gradient(transparent,var(--bad-wash))}
+.more{color:var(--accent);font-size:12.5px;margin-top:5px}
+.raw{margin-top:10px} .raw summary{font-size:12.5px;color:var(--dim);cursor:pointer}
+
+@media(max-width:900px){
+  #shell{grid-template-columns:1fr;grid-auto-rows:minmax(0,1fr)}
+  #shell #detail{display:none}
+  #shell.hide-runs.hide-tasks #detail{display:flex}
+  #dhead{flex-wrap:wrap} #dhead .facts{padding:0 14px 8px;order:3;width:100%} nav{min-height:36px}
+}
+</style>
+
+<div id="shell">
+  <div class="pane" id="runsPane">
+    <div class="head"><input id="runSearch" type="search" aria-label="Search runs" placeholder="Runs"></div>
+    <div class="body" id="runs"></div>
+  </div>
+  <div class="pane" id="tasksPane">
+    <div class="head">
+      <input id="taskSearch" type="search" aria-label="Search tasks" placeholder="Tasks">
+      <select id="sort" aria-label="Sort tasks"><option value="default">Order</option><option value="score">Score</option><option value="time">Time</option></select>
+    </div>
+    <div class="body" id="tasks"></div>
+  </div>
+  <div class="pane" id="detail">
+    <div id="dhead"></div>
+    <div id="toolbar"></div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<script type="module">
+const $ = id => document.getElementById(id);
+const esc = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pretty = x => typeof x === 'string' ? x : JSON.stringify(x, null, 2);
+const pct = x => x == null ? '—' : `${(x * 100).toFixed(0)}%`;
+const dur = x => x == null ? '—' : x < 1000 ? `${x}ms` : x < 60000 ? `${(x / 1000).toFixed(1)}s` : `${Math.floor(x / 60000)}m${String(Math.round(x % 60000 / 1000)).padStart(2, '0')}s`;
+const bytes = n => n == null ? '—' : n < 1024 ? `${n} B` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`;
+const clock = ts => { const d = new Date(ts); return isNaN(d) ? '' : d.toISOString().slice(11, 19); };
+const day = ts => { const d = new Date(ts); return isNaN(d) ? '' : d.toISOString().slice(0, 10); };
+// Where a JSON value starting at `from` ends, or -1: string-aware brace matching,
+// so braces inside string literals do not close the value.
+function jsonEnd(text, from) {
+  const close = text[from] === '{' ? '}' : ']';
+  let depth = 0, inString = false;
+  for (let i = from; i < text.length; i++) {
+    const c = text[i];
+    if (inString) {
+      if (c === '\\') i++;
+      else if (c === '"') inString = false;
+      continue;
+    }
+    if (c === '"') inString = true;
+    else if (c === '{' || c === '[') depth++;
+    else if (c === '}' || c === ']') {
+      depth--;
+      if (depth === 0) return c === close ? i : -1;
+      if (depth < 0) return -1;
+    }
+  }
+  return -1;
+}
+/**
+ * Pretty-print every JSON value in a string, leaving the text around it alone.
+ * Agent output is rarely a clean document: it is JSON per line, or JSON with a
+ * shell banner above it and a truncation note below, or several values in a row.
+ */
+function maybeJSON(text) {
+  const src = String(text ?? '');
+  if (!src || src.length > 4 * 1024 * 1024) return src;
+  try { return JSON.stringify(JSON.parse(src), null, 2) } catch {}
+  let out = '', at = 0, found = 0;
+  while (at < src.length) {
+    const start = src.slice(at).search(/[[{]/);
+    if (start < 0) break;
+    const from = at + start;
+    const end = jsonEnd(src, from);
+    let value;
+    // Only reflow values written on one line: text already spread over lines is
+    // readable, and re-indenting it would fight whatever wrote it.
+    const slice = end > from ? src.slice(from, end + 1) : '';
+    if (slice && !slice.includes('\n')) { try { value = JSON.parse(slice) } catch {} }
+    if (value === undefined) { out += src.slice(at, from + 1); at = from + 1; continue }
+    // Keep one-line values inline; they read worse spread over five lines.
+    const shaped = JSON.stringify(value, null, 2);
+    out += src.slice(at, from) + (shaped.length <= 80 ? JSON.stringify(value) : shaped);
+    at = end + 1;
+    found++;
+  }
+  if (!found) return src;
+  return out + src.slice(at);
+}
+const firstLine = (s, n = 200) => { const t = String(s ?? '').trim().split('\n')[0]; return t.length > n ? t.slice(0, n) + '…' : t };
+
+let runs = [], run = null, task = null, tab = 'Transcript', artifacts = [], generation = 0, preview = 0;
+let traceFile = null, fileChoice = null;
+const prefs = { thinking: true, tools: true, raw: false };
+const store = { get: k => { try { return localStorage.getItem(k) } catch { return null } }, set: (k, v) => { try { localStorage.setItem(k, v) } catch {} } };
+
+// Deep link: #series/runId/taskId/tab survives a reload and can be pasted to someone else.
+function syncHash() {
+  if (!run) return;
+  const next = '#' + [run.series, run.runId, task?.id ?? '', tab].map(encodeURIComponent).join('/');
+  if (location.hash !== next) history.replaceState(null, '', next);
+}
+function readHash() {
+  const [series, runId, taskId, wanted] = location.hash.replace(/^#/, '').split('/').map(decodeURIComponent);
+  return { series, runId, taskId, tab: TABS.includes(wanted) ? wanted : null };
+}
+
+const endpoint = (path, extra = {}) => path + '?' + new URLSearchParams({ series: run.series, run: run.runId, ...extra });
+async function get(url) { const r = await fetch(url); const data = await r.json(); if (!r.ok) throw Error(data.error || r.statusText); return data }
+const guard = fn => async (...args) => { try { await fn(...args) } catch (e) { $('content').innerHTML = `<p class="none bad">${esc(e.message)}</p>` } };
+
+const FAILED = ['error', 'timeout', 'invalid-answer'];
+const scoreCell = x => `<span class="${x < 0 ? 'bad' : x == null ? 'dim' : ''}">${pct(x)}</span>`;
+
+/* ------------------------------------------------------------------ runs */
+// A run's custom name is how people know it; the generated id is only the fallback.
+const runName = r => r.name || r.runId;
+function drawRuns() {
+  const q = $('runSearch').value.toLowerCase().trim();
+  const hay = r => [r.name, r.series + '/' + r.runId].filter(Boolean).join('\n').toLowerCase();
+  const list = runs.filter(r => hay(r).includes(q))
+    .sort((a, b) => q ? hay(b).startsWith(q) - hay(a).startsWith(q) || !!b.name - !!a.name : 0);
+  // State is said only when it is not the ordinary one.
+  const state = r => r.state === 'complete' ? '' : ` · <span class="${r.state === 'running' ? 'warn' : ''}">${esc(r.state)} ${r.done}/${r.total ?? '?'}</span>`;
+  $('runs').innerHTML = list.map(r => `<button class="row ${run?.dir === r.dir ? 'sel' : ''}" data-run="${esc(r.dir)}" title="${esc(r.series + '/' + r.runId)}">
+    <span class="name">${esc(runName(r))}</span>${scoreCell(r.score?.meanScore)}
+    <span class="sub">${esc(r.series)} · ${esc(day(r.startedAt))}${state(r)}</span></button>`).join('')
+    || '<p class="none">No runs</p>';
+  for (const b of $('runs').querySelectorAll('[data-run]')) b.onclick = guard(() => selectRun(runs.find(r => r.dir === b.dataset.run)));
+}
+
+async function refresh() {
+  runs = await get('/api/runs');
+  drawRuns();
+  const want = run ? null : readHash();
+  if (want?.tab) tab = want.tab;
+  const wanted = want && runs.find(r => r.series === want.series && r.runId === want.runId);
+  if (run) await selectRun(runs.find(r => r.dir === run.dir) ?? run, task?.id);
+  else if (wanted) await selectRun(wanted, want.taskId);
+  else if (runs.length) await selectRun(runs[0]);
+  else $('content').innerHTML = '<p class="none">No runs in kierston_bench/runs</p>';
+}
+
+async function selectRun(r, keep) {
+  const token = ++generation; preview++;
+  run = r; task = null; drawRuns();
+  const data = await get(endpoint('/api/run'));
+  if (token !== generation) return;
+  run = data;
+  drawTasks();
+  const kept = run.tasks.find(t => t.id === keep);
+  // A freshly picked run opens on its own summary; a reload returns to the task.
+  if (kept) await selectTask(kept);
+  else { drawRunOverview(); syncHash() }
+}
+
+/* ----------------------------------------------------------------- tasks */
+function visibleTasks() {
+  const q = $('taskSearch').value.toLowerCase();
+  let rows = run.tasks.filter(t => (t.id + ' ' + t.status).toLowerCase().includes(q));
+  if ($('sort').value === 'score') rows = [...rows].sort((a, b) => (a.score ?? Infinity) - (b.score ?? Infinity));
+  if ($('sort').value === 'time') rows = [...rows].sort((a, b) => (b.durationMs ?? 0) - (a.durationMs ?? 0));
+  return rows;
+}
+function drawTasks() {
+  const rows = visibleTasks();
+  // A score where there is one; otherwise the status is what there is to say.
+  const right = t => t.score != null ? scoreCell(t.score)
+    : `<span class="${FAILED.includes(t.status) ? 'bad' : t.status === 'running' ? 'warn' : 'dim'}">${esc(['pending', 'not-run'].includes(t.status) ? '—' : t.status)}</span>`;
+  $('tasks').innerHTML = `<button class="row ${task ? '' : 'sel'}" data-overview><span class="name">Overview</span><span class="dim">${run.done}/${run.total ?? '?'}</span></button>` +
+    (rows.map(t => `<button class="row ${task?.id === t.id ? 'sel' : ''} ${['pending', 'not-run'].includes(t.status) ? 'idle' : ''}" data-task="${esc(t.id)}" title="${esc(t.id)}">
+    <span class="name">${esc(t.family)} <span class="dim">${esc(t.id.split(':').at(-1))}</span></span>${right(t)}</button>`).join('')
+    || '<p class="none">No tasks</p>');
+  $('tasks').querySelector('[data-overview]').onclick = () => { generation++; preview++; task = null; drawTasks(); drawRunOverview(); syncHash() };
+  for (const b of $('tasks').querySelectorAll('[data-task]')) b.onclick = guard(() => selectTask(run.tasks.find(t => t.id === b.dataset.task)));
+}
+
+async function selectTask(t) {
+  const token = ++generation; preview++;
+  task = t; artifacts = []; traceFile = null; fileChoice = null;
+  if (matchMedia('(max-width:900px)').matches) setLayout(true, true);
+  drawTasks();
+  drawHead();
+  syncHash();
+  $('toolbar').innerHTML = ''; $('content').innerHTML = '';
+  let loaded = [];
+  try { loaded = (await get(endpoint('/api/task', { task: t.id }))).files }
+  catch (e) { if (!['pending', 'not-run'].includes(t.status)) throw e }
+  if (token !== generation) return;
+  artifacts = loaded;
+  guard(renderTab)();
+  document.querySelector(`[data-task="${CSS.escape(t.id)}"]`)?.scrollIntoView({ block: 'nearest' });
+}
+
+const TABS = ['Transcript', 'Answer', 'KDI', 'Files'];
+const focusButton = () => `<button id="focus" title="Toggle lists (1, 2)" aria-label="Toggle lists">${layout.runs && layout.tasks ? '⇥' : '⇤'}</button>`;
+function bindHead() {
+  $('focus').onclick = () => { const hide = !(layout.runs && layout.tasks); setLayout(hide, hide) };
+  for (const b of $('dhead').querySelectorAll('[data-tab]')) b.onclick = guard(() => { tab = b.dataset.tab; drawHead(); syncHash(); return renderTab() });
+}
+function drawHead() {
+  if (!task) return drawRunOverview();
+  const odd = !['answered', 'scored'].includes(task.status);
+  $('dhead').innerHTML = `${focusButton()}<h2 title="${esc(task.id)}">${esc(task.id)}</h2><span class="grow"></span>
+    <div class="facts">
+      ${odd ? `<span class="${FAILED.includes(task.status) ? 'bad' : ''}">${esc(task.status)}</span>` : ''}
+      ${task.exitCode ? `<span class="bad">exit ${esc(task.exitCode)}</span>` : ''}
+      <span>${dur(task.durationMs)}</span><span>${task.kdiCalls ?? '—'} kdi</span><b>${scoreCell(task.score)}</b>
+    </div>
+    <nav>${TABS.map(x => `<button data-tab="${x}" class="${tab === x ? 'on' : ''}">${x}</button>`).join('')}</nav>`;
+  bindHead();
+}
+
+const familyTable = agg => `<table><thead><tr><th>Family</th><th class="num">Tasks</th><th class="num">Scored</th><th class="num">Mean</th></tr></thead><tbody>` +
+  agg.families.filter(f => f.attempted || f.scored).map(f => `<tr><td>${esc(f.family)}</td><td class="num">${f.tasks}</td><td class="num">${f.scored}</td><td class="num">${scoreCell(f.meanScore)}</td></tr>`).join('') + '</tbody></table>';
+
+function drawRunOverview() {
+  const agg = run.scoreReport?.aggregate;
+  $('dhead').innerHTML = `${focusButton()}<h2>${esc(runName(run))}</h2><span class="grow"></span>
+    <div class="facts"><span>${run.done}/${run.total ?? '?'}</span>${run.state === 'complete' ? '' : `<span class="${run.state === 'running' ? 'warn' : ''}">${esc(run.state)}</span>`}<b>${scoreCell(run.score?.meanScore)}</b></div>`;
+  bindHead();
+  $('toolbar').innerHTML = '';
+  $('content').className = '';
+  const facts = { Series: run.series, Run: run.runId, Image: run.image, Started: run.startedAt, Finished: run.finishedAt, Concurrency: run.concurrency, Timeout: run.timeoutMs && dur(run.timeoutMs) };
+  $('content').innerHTML = (agg ? `<h3>Families</h3>${familyTable(agg)}`
+      : `<h3>Unscored</h3><pre>bun run bench score ${esc(run.series)}/${esc(run.runId)} --write</pre>`) +
+    `<h3>Run</h3><dl class="kv">${Object.entries(facts).filter(([, v]) => v != null && v !== '').map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
+}
+
+/* ------------------------------------------------------------ tab bodies */
+const traceFiles = () => artifacts.filter(f => /(^|\/)logs\//.test(f) && f.endsWith('.jsonl') || /session.*\.jsonl$/.test(f));
+async function fileText(name) { return get(endpoint('/api/file', { task: task.id, file: name })) }
+
+async function renderTab() {
+  const token = ++preview;
+  $('content').className = ''; $('toolbar').innerHTML = '';
+  if (!artifacts.length && tab !== 'Answer') { $('content').innerHTML = '<p class="none">No artifacts</p>'; return }
+  if (tab === 'Answer') return renderAnswer(token);
+  if (tab === 'Transcript') return renderTranscript(token);
+  if (tab === 'KDI') return renderKdi(token);
+  return renderFiles(token, artifacts);
+}
+
+async function renderAnswer(token) {
+  const box = $('content');
+  const scored = run.scoreReport?.tasks?.find(t => t.id === task.id);
+  const answer = artifacts.includes('answer.json') ? await fileText('answer.json') : null;
+  if (token !== preview) return;
+  let parsed = null; try { parsed = JSON.parse(answer?.text ?? '') } catch {}
+  const scoring = scored?.scoring ?? task.scoring;
+  const metrics = scored?.metrics ?? task.metrics;
+  const issues = scored?.issues ?? task.issues;
+  box.innerHTML = `
+    ${scoring ? `<h3>Score</h3><div>${esc(scoring.summary ?? '')}</div><div class="dim small">${esc([scoring.method, scoring.aggregate].filter(Boolean).join(' · '))}</div>` : ''}
+    ${issues?.length ? `<h3>Issues</h3><pre class="bad">${esc(issues.map(pretty).join('\n'))}</pre>` : ''}
+    ${parsed?.notes ? `<h3>Notes</h3><div style="white-space:pre-wrap;max-width:90ch">${esc(parsed.notes)}</div>` : ''}
+    <h3>Answer</h3>${answer ? `<pre>${esc(maybeJSON(answer.text))}</pre>` : '<span class="dim">No answer.json</span>'}
+    ${metrics && Object.keys(metrics).length ? `<h3>Metrics</h3><dl class="kv">${Object.entries(metrics).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(typeof v === 'number' ? +v.toFixed(3) : v)}</dd></div>`).join('')}</dl>` : ''}`;
+}
+
+/* ------------------------------------------------------------ transcript */
+// The agent's own harness clips long tool output; say so rather than showing a stub.
+function truncNote(res) {
+  const t = res.message?.details?.truncation;
+  if (!t?.truncated) return '';
+  return `<div class="dim small" style="margin-top:4px">Truncated for agent: ${t.outputLines ?? '?'} of ${t.totalLines ?? '?'} lines (${bytes(t.totalBytes)}) · ${esc(res.message.details.fullOutputPath ?? '')}</div>`;
+}
+function parseTranscript(text) {
+  const events = text.split('\n').filter(l => l.trim()).map(l => { try { return JSON.parse(l) } catch { return { type: 'unparsed', raw: l } } });
+  const results = new Map();
+  for (const e of events) if (e.message?.role === 'toolResult') results.set(e.message.toolCallId, e);
+  const items = [];
+  const session = { model: null, provider: null, thinking: null, startedAt: null };
+  for (const e of events) {
+    const raw = JSON.stringify(e, null, 2);
+    if (e.type === 'session') { session.startedAt = e.timestamp; continue }
+    if (e.type === 'model_change') { session.model = e.modelId; session.provider = e.provider; continue }
+    if (e.type === 'thinking_level_change') { session.thinking = e.thinkingLevel; continue }
+    if (e.type === 'unparsed') { items.push({ kind: 'meta', who: 'unparsed', sum: firstLine(e.raw), body: `<pre>${esc(e.raw)}</pre>`, raw: e.raw, ts: null }); continue }
+    const m = e.message;
+    if (!m) { items.push({ kind: 'meta', who: e.type ?? 'event', sum: firstLine(raw), body: `<pre>${esc(raw)}</pre>`, raw, ts: e.timestamp }); continue }
+    if (m.role === 'toolResult') continue; // shown with its call
+    const content = Array.isArray(m.content) ? m.content : [{ type: 'text', text: pretty(m.content) }];
+    for (const c of content) {
+      if (m.role === 'user' && c.type === 'text')
+        items.push({ kind: 'user', who: 'prompt', sum: firstLine(c.text), body: `<pre>${esc(c.text)}</pre>`, raw, ts: e.timestamp, search: c.text });
+      else if (c.type === 'thinking') {
+        // Some providers return only an encrypted signature; there is no text to show.
+        const shown = (c.thinking ?? '').trim();
+        items.push({ kind: 'think', who: 'thinking', sum: shown ? firstLine(shown.replace(/\*\*/g, '')) : 'encrypted',
+          body: shown ? `<pre>${esc(shown)}</pre>` : '<span class="dim">Encrypted reasoning</span>',
+          raw, ts: e.timestamp, search: shown });
+      }
+      else if (c.type === 'toolCall' || c.type === 'tool_use') {
+        const res = results.get(c.id);
+        const out = (res?.message?.content ?? []).map(x => x.type === 'text' ? x.text : pretty(x)).join('\n');
+        const failed = res?.message?.isError;
+        const ms = res && e.timestamp ? Date.parse(res.timestamp) - Date.parse(e.timestamp) : null;
+        const args = c.arguments ?? c.input ?? {};
+        const cmd = typeof args.command === 'string' ? args.command : pretty(args);
+        items.push({
+          kind: failed ? 'err' : 'tool', who: c.name ?? 'tool', sum: firstLine(cmd, 300),
+          right: [ms != null ? dur(ms) : null, out ? bytes(new Blob([out]).size) : null].filter(Boolean).join(' · '),
+          body: `<pre class="${typeof args.command === 'string' ? 'cmd' : ''}">${esc(cmd)}</pre>` +
+            (res ? `<div class="lbl">${failed ? 'Error' : 'Output'}</div><pre class="out clip ${failed ? 'fail' : ''}">${esc(maybeJSON(out))}</pre>${truncNote(res)}` : '<div class="lbl">No result</div>'),
+          raw: raw + (res ? '\n\n' + JSON.stringify(res, null, 2) : ''), ts: e.timestamp, search: cmd + '\n' + out,
+        });
+      }
+      else if (c.type === 'text')
+        items.push({ kind: 'say', who: 'assistant', sum: firstLine(c.text), body: `<pre>${esc(c.text)}</pre>`, raw, ts: e.timestamp, search: c.text });
+      else
+        items.push({ kind: 'meta', who: c.type ?? 'block', sum: firstLine(pretty(c)), body: `<pre>${esc(pretty(c))}</pre>`, raw, ts: e.timestamp, search: pretty(c) });
+    }
+  }
+  return { items, session, count: events.length };
+}
+
+let transcript = null, allClosed = false;
+async function renderTranscript(token) {
+  const files = traceFiles();
+  if (!files.length) { $('content').innerHTML = '<p class="none">No transcript</p>'; return }
+  traceFile = files.includes(traceFile) ? traceFile : files[0];
+  const bar = $('toolbar');
+  bar.innerHTML = `${files.length > 1 ? `<select id="traceSel" aria-label="Transcript file">${files.map(f => `<option ${f === traceFile ? 'selected' : ''}>${esc(f)}</option>`).join('')}</select>` : ''}
+    <input id="q" type="search" placeholder="Filter" aria-label="Filter transcript"><span id="tcount" class="count"></span>
+    <button data-pref="thinking" class="${prefs.thinking ? 'on' : ''}">Thinking</button>
+    <button data-pref="tools" class="${prefs.tools ? 'on' : ''}">Tools</button>
+    <button data-pref="raw" class="${prefs.raw ? 'on' : ''}">Raw</button>
+    <button id="fold">Fold</button>
+    <a id="download" href="${esc(endpoint('/api/file', { task: task.id, file: traceFile, download: '1' }))}">Download</a>`;
+  const data = await fileText(traceFile);
+  if (token !== preview) return;
+  transcript = parseTranscript(data.text);
+  allClosed = false;
+  $('traceSel') && ($('traceSel').onchange = guard(() => { traceFile = $('traceSel').value; return renderTranscript(++preview) }));
+  for (const b of bar.querySelectorAll('[data-pref]')) b.onclick = () => { prefs[b.dataset.pref] = !prefs[b.dataset.pref]; b.classList.toggle('on'); drawTranscript() };
+  $('q').oninput = drawTranscript;
+  $('fold').onclick = () => {
+    allClosed = !allClosed; $('fold').textContent = allClosed ? 'Unfold' : 'Fold';
+    for (const e of $('content').querySelectorAll('.ev')) e.classList.toggle('closed', allClosed);
+  };
+  drawTranscript();
+}
+
+function drawTranscript() {
+  const q = ($('q')?.value ?? '').toLowerCase();
+  const shown = transcript.items.filter(it =>
+    (it.kind !== 'think' || prefs.thinking) && (!['tool', 'err'].includes(it.kind) || prefs.tools) &&
+    (!q || (it.search ?? it.raw ?? '').toLowerCase().includes(q) || it.who.toLowerCase().includes(q)));
+  const s = transcript.session;
+  const t0 = Date.parse(s.startedAt ?? transcript.items.find(it => it.ts)?.ts);
+  const offset = it => it.ts && !isNaN(t0) ? `+${dur(Date.parse(it.ts) - t0)} · ${clock(it.ts)}` : '';
+  $('tcount').textContent = shown.length === transcript.items.length ? '' : `${shown.length}/${transcript.items.length}`;
+  $('tcount').style.display = $('tcount').textContent ? '' : 'none';
+  $('content').innerHTML = `<div class="session">${esc([s.model, s.thinking && `thinking ${s.thinking}`].filter(Boolean).join(' · '))}</div>` +
+    (shown.map(it => `<div class="ev ${it.kind} ${defaultClosed(it, q) ? 'closed' : ''}">
+      <div class="h" title="${esc(offset(it))}"><span class="tag">${esc(it.who)}</span><span class="sum">${esc(it.sum)}</span><span class="t">${esc(it.right ?? '')}</span></div>
+      <div class="b">${it.body}${prefs.raw ? `<details class="raw"><summary>Raw</summary><pre>${esc(it.raw ?? '')}</pre></details>` : ''}</div>
+    </div>`).join('') || '<p class="none">No matches</p>');
+  for (const el of $('content').querySelectorAll('.ev>.h')) el.onclick = () => el.parentElement.classList.toggle('closed');
+  for (const el of $('content').querySelectorAll('.clip')) {
+    if (el.scrollHeight <= el.clientHeight + 8) { el.classList.add('open'); continue }
+    const btn = document.createElement('button');
+    btn.className = 'more'; btn.textContent = 'Show all';
+    btn.onclick = () => { el.classList.toggle('open'); btn.textContent = el.classList.contains('open') ? 'Show less' : 'Show all' };
+    el.after(btn);
+  }
+}
+// Long prompts and thinking start folded; tool calls and answers stay open.
+const defaultClosed = (it, q) => !q && (it.kind === 'user' || it.kind === 'think' || it.kind === 'meta');
+
+/* ------------------------------------------------------------------ kdi */
+async function renderKdi(token) {
+  const file = artifacts.find(f => f.endsWith('kdi_calls.jsonl'));
+  if (!file) { $('content').innerHTML = '<p class="none">No KDI calls</p>'; return }
+  $('toolbar').innerHTML = `<input id="q" type="search" placeholder="Filter" aria-label="Filter KDI calls"><span id="kcount" class="count"></span>
+    <a id="download" href="${esc(endpoint('/api/file', { task: task.id, file, download: '1' }))}">Download</a>`;
+  const data = await fileText(file);
+  if (token !== preview) return;
+  const calls = data.text.split('\n').filter(l => l.trim()).map(l => { try { return JSON.parse(l) } catch { return { args: [l] } } });
+  const draw = () => {
+    const q = ($('q').value ?? '').toLowerCase();
+    const rows = calls.filter(c => !q || JSON.stringify(c).toLowerCase().includes(q));
+    $('kcount').textContent = `${rows.length}/${calls.length}`;
+    $('content').innerHTML = `<table><thead><tr><th>Time</th><th>Command</th><th class="num">ms</th><th class="num">Out</th></tr></thead><tbody>` +
+      rows.map(c => `<tr><td class="dim nowrap">${esc(clock(c.at))}</td>
+        <td class="mono">kdi ${esc((c.args ?? []).join(' '))}${c.code ? ` <span class="bad">exit ${esc(c.code)}</span>` : ''}${c.err ? `<pre class="out fail">${esc(maybeJSON(c.err))}</pre>` : ''}</td>
+        <td class="num">${c.ms ?? '—'}</td><td class="num">${bytes(c.outBytes)}</td></tr>`).join('') + '</tbody></table>';
+  };
+  $('q').oninput = draw; draw();
+}
+
+/* ---------------------------------------------------------------- files */
+async function renderFiles(token, choices) {
+  fileChoice = choices.includes(fileChoice) ? fileChoice : choices[0];
+  const box = $('content');
+  box.className = 'split';
+  box.innerHTML = `<div class="filelist">${choices.map(f => `<button data-file="${esc(f)}" class="${f === fileChoice ? 'on' : ''}">${esc(f)}</button>`).join('')}</div>
+    <div class="filebody"><div class="fmeta"><span id="size"></span><a id="download" href="${esc(endpoint('/api/file', { task: task.id, file: fileChoice, download: '1' }))}">Download</a></div><div id="fbody"></div></div>`;
+  for (const b of box.querySelectorAll('[data-file]')) b.onclick = guard(() => { fileChoice = b.dataset.file; return renderFiles(++preview, choices) });
+  const data = await fileText(fileChoice);
+  if (token !== preview) return;
+  $('size').textContent = `${bytes(data.size)}${data.truncated ? ' · first 2 MB' : ''}`;
+  const text = fileChoice.endsWith('.jsonl')
+    ? data.text.split('\n').filter(l => l.trim()).map(l => maybeJSON(l)).join('\n\n')
+    : maybeJSON(data.text);
+  $('fbody').innerHTML = `<pre>${esc(text)}</pre>`;
+}
+
+/* ------------------------------------------------------------- controls */
+const layout = { runs: store.get('hideRuns') === '1', tasks: store.get('hideTasks') === '1' };
+function setLayout(hideRuns, hideTasks) {
+  layout.runs = hideRuns; layout.tasks = hideTasks;
+  store.set('hideRuns', hideRuns ? '1' : '0'); store.set('hideTasks', hideTasks ? '1' : '0');
+  $('shell').classList.toggle('hide-runs', hideRuns);
+  $('shell').classList.toggle('hide-tasks', hideTasks);
+  if ($('focus')) $('focus').textContent = hideRuns && hideTasks ? '⇥' : '⇤';
+}
+setLayout(layout.runs, layout.tasks);
+
+$('runSearch').oninput = drawRuns;
+for (const id of ['taskSearch', 'sort']) $(id).oninput = drawTasks;
+
+document.addEventListener('keydown', e => {
+  if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName) || e.metaKey || e.ctrlKey) return;
+  const rows = run?.tasks ? visibleTasks() : [];
+  const at = rows.findIndex(t => t.id === task?.id);
+  if (e.key === 'j' && rows[at + 1]) guard(selectTask)(rows[at + 1]);
+  else if (e.key === 'k' && at > 0) guard(selectTask)(rows[at - 1]);
+  else if (e.key === '/') { e.preventDefault(); ($('q') ?? $('taskSearch')).focus() }
+  else if (e.key === 'r') guard(refresh)();
+  else if (e.key === '1') setLayout(!layout.runs, layout.tasks);
+  else if (e.key === '2') setLayout(layout.runs, !layout.tasks);
+  else if (task && /^[3-6]$/.test(e.key)) { tab = TABS[+e.key - 3]; drawHead(); syncHash(); guard(renderTab)() }
+});
+
+guard(refresh)();
+</script></html>

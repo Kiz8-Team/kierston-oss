@@ -1,0 +1,428 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is([data-theme="dark"] *));
+
+@theme inline {
+  /* Geist, the same face as the paper site, and the only face: the mono slot
+     is bound to it so nothing on these pages can read as a terminal. Column
+     alignment comes from `tabular-nums` on the body instead. */
+  --font-sans: var(--font-geist-sans), Inter, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: var(--font-sans);
+
+  /* Strict edges: the radius scale is zeroed at the source, so a stray
+     `rounded-md` further in cannot soften a corner. The one curve kept is
+     `rounded-full`, for the dots in a legend and a key beside a name. */
+  --radius-none: 0px;
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+  --radius-full: 9999px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-rule: var(--rule);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-link: var(--accent-ink);
+  --shadow-card: none;
+  --shadow-float: 0 0 0 1px var(--border-strong), 0 18px 36px rgb(0 0 0 / 14%);
+}
+
+/*
+ * KierstonBlue is set the way the Kierston site is set.
+ *
+ * A white page, black type, and rules instead of boxes: a black hairline where
+ * a table starts and a section begins, a grey hairline between rows, a grey
+ * wash under the pointer and under the selected row. Nothing is raised and
+ * nothing casts a shadow. What is current is drawn in black — a black bar at
+ * the edge of the current row, a black fill behind the current page in the
+ * rail — because on a white page black is the loudest thing there is.
+ *
+ * Hue is spent only on data. Blue marks a handle you can follow or copy, green
+ * and red are a state, orange is a warning, and the series colours are the
+ * site's own: the same blue, orange, green and plum the paper's figures use.
+ */
+:root {
+  color-scheme: light;
+  --radius: 0;
+
+  /* The four surfaces. The canvas and a panel are the same white — a panel is
+     told from the page by its rule, not by a tone — and the two greys are the
+     wash and the strip. Nothing else may invent a grey. */
+  --canvas: #ffffff;
+  --panel: #ffffff;
+  --panel-raised: #f5f5f5;
+  --panel-sunken: #fafafa;
+
+  --background: var(--canvas);
+  --foreground: #000000;
+  --card: var(--panel);
+  --card-foreground: var(--foreground);
+  --popover: var(--panel);
+  --popover-foreground: var(--foreground);
+
+  /* The one state colour: black. A filled control, the current page, the
+     selected tab's underline. */
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--panel-raised);
+  --secondary-foreground: var(--foreground);
+  --muted: #e5e5e5;
+  --muted-foreground: #525252;
+  /* The selection wash: the site's neutral-100. A selected row still reads as
+     the same row rather than as a coloured band. */
+  --accent: #f5f5f5;
+  --accent-foreground: #000000;
+  --destructive: #b42318;
+  /* Two rules: the grey hairline between rows, and the black rule that starts
+     a table or a section. */
+  --border: #e5e5e5;
+  --border-strong: #d4d4d4;
+  --rule: #000000;
+  --input: #d4d4d4;
+  --ring: #000000;
+  --success: #177a4a;
+  --warning: #c2410c;
+
+  /* Series colours, from the site's figures: blue first because the primary
+     series is the one being read, then orange, green, plum, and a neutral for
+     whatever is left. */
+  --chart-1: #256abf;
+  --chart-2: #c2410c;
+  --chart-3: #177a4a;
+  --chart-4: #8a6bb5;
+  --chart-5: #737373;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #000000;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #000000;
+
+  /* Shades with no shadcn role, referenced from Tailwind arbitrary values:
+     the map's hover wash, the sunken record panel, the chart groove. */
+  --surface-1: var(--panel);
+  --surface-sunken: var(--panel-sunken);
+  --rail-muted: #737373;
+  /* Blue is the one signal spent on chrome: a handle you can follow or copy.
+     It never means "current" — it means "this is a value, and it goes
+     somewhere". */
+  --accent-ink: #256abf;
+  --accent-tint: #f5f5f5;
+  --grid-line: #e5e5e5;
+
+  /* Chips: a value you can act on. The body is the same light grey for all of
+     them and the hue is spent on the icon block, so a table with forty chips in
+     it stays a table rather than becoming a colour field. Blue for a key you
+     would paste, green for a person, ochre for a place. */
+  --chip-blue: #f5f5f5;
+  --chip-blue-hi: #e5e5e5;
+  --chip-blue-ink: #000000;
+  --chip-green: #f5f5f5;
+  --chip-green-hi: #e5e5e5;
+  --chip-green-ink: #000000;
+  --chip-sand: #f5f5f5;
+  --chip-sand-hi: #e5e5e5;
+  --chip-sand-ink: #000000;
+  --chip-icon: #ffffff;
+  --chip-place: #b0893c;
+
+  --pin-a: #177a4a;
+  --pin-b: #b42318;
+  --pin-hover: #c2410c;
+
+  /* Ties, in the site's own family palette. */
+  --tie-family: #c2410c;
+  --tie-work: #1d4ed8;
+  --tie-school: #7c3aed;
+  --tie-community: #0f766e;
+  --tie-neighbour: #a16207;
+  --tie-elsewhere: #6b7280;
+  --tie-exposure: #a3a3a3;
+  --tie-affinity: var(--primary);
+
+  --shadow-card: none;
+  --shadow-float: 0 0 0 1px var(--border-strong), 0 18px 36px rgb(0 0 0 / 14%);
+}
+
+/* The dark scheme is the same page inverted: black canvas, white type, the
+   rule that was black is white, and the greys keep their order. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #161616;
+  --panel: #161616;
+  --panel-raised: #262626;
+  --panel-sunken: #1c1c1c;
+  --foreground: #f5f5f5;
+  --card-foreground: var(--foreground);
+  --popover-foreground: var(--foreground);
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --muted: #303030;
+  --muted-foreground: #a3a3a3;
+  --accent: #262626;
+  --accent-foreground: #ffffff;
+  --destructive: #f87171;
+  --border: #2e2e2e;
+  --border-strong: #454545;
+  --rule: #ffffff;
+  --input: #404040;
+  --ring: #ffffff;
+  --success: #4ade80;
+  --warning: #fb923c;
+  --chart-1: #60a5fa;
+  --chart-2: #fb923c;
+  --chart-3: #4ade80;
+  --chart-4: #a78bfa;
+  --chart-5: #a3a3a3;
+  --sidebar: #161616;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #262626;
+  --sidebar-ring: #ffffff;
+  --rail-muted: #a3a3a3;
+  --accent-ink: #7ba3df;
+  --accent-tint: #262626;
+  --grid-line: #2e2e2e;
+  --chip-blue: #262626;
+  --chip-blue-hi: #303030;
+  --chip-blue-ink: #f5f5f5;
+  --chip-green: #262626;
+  --chip-green-hi: #303030;
+  --chip-green-ink: #f5f5f5;
+  --chip-sand: #262626;
+  --chip-sand-hi: #303030;
+  --chip-sand-ink: #f5f5f5;
+  --chip-icon: #000000;
+  --chip-place: #d9a84c;
+  --pin-a: #4ade80;
+  --pin-b: #f87171;
+  --pin-hover: #fb923c;
+  --tie-family: #fb923c;
+  --tie-work: #60a5fa;
+  --tie-school: #a78bfa;
+  --tie-community: #2dd4bf;
+  --tie-neighbour: #facc15;
+  --tie-elsewhere: #9ca3af;
+  --tie-exposure: #525252;
+  --shadow-float: 0 0 0 1px var(--border-strong), 0 18px 36px rgb(0 0 0 / 60%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+  /* The whole instrument is scaled from here.
+     Every size on these pages is in rem — type, padding, control heights,
+     panel gutters — so the root is the one dial that moves the console's
+     chrome without changing a single proportion. */
+  html {
+    font-size: 17px;
+  }
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    margin: 0;
+    /* The reading size sits just under the root: a screen here is thirty rows
+       of figures rather than a paragraph. Tabular figures are on for the whole
+       application: a number that changes must never resize the cell it is in. */
+    font: 0.8rem/1.45 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+  /* Links are underlined, the way the site underlines them: black type, a
+     thin rule under it, offset so it clears the descenders. The chips and the
+     rail set their own `no-underline`. */
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--border-strong);
+  }
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+    font-weight: 600;
+  }
+  /* Square focus, drawn on the element's own edge rather than floating
+     outside it — an offset ring on a flush grid overlaps its neighbour. */
+  :focus-visible {
+    outline: 1px solid var(--ring);
+    outline-offset: 0;
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  /* Scrollbars as a square groove and a square thumb, in the page's greys. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--panel-sunken);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border: 2px solid var(--panel-sunken);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+  ::-webkit-scrollbar-corner {
+    background: var(--panel-sunken);
+  }
+}
+
+@layer components {
+  /* The label register: every eyebrow, field label and rail group title is
+     set this way — the site's `text-xs font-medium uppercase tracking-wide
+     text-neutral-500` — so a label never competes with a value. */
+  .micro {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* A keycap: the ⌘K hint, a shortcut in a tooltip, a function label. */
+  .cap {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.2rem;
+    height: 1.2rem;
+    padding: 0 0.25rem;
+    border: 1px solid var(--border-strong);
+    background: var(--panel);
+    color: var(--muted-foreground);
+    font-size: 0.66rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* The status strip's own cells: divided by the same hairline as everything
+     else, so the top of the page reads as part of the grid. */
+  .hud-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 100%;
+    padding: 0 0.7rem;
+    border-left: 1px solid var(--border);
+    white-space: nowrap;
+  }
+}
+
+/*
+ * Strict edges, enforced once.
+ *
+ * Zeroing the radius scale handles `rounded-md` and its family, but not the
+ * hundred arbitrary `rounded-[3px]`s already written through the map layers,
+ * the chips and the legends — and not the ones a future component will write.
+ * An unlayered rule outranks every Tailwind layer, so this is the single place
+ * the geometry is decided. A dot opts out with `rounded-full`; anything else
+ * that genuinely needs a curve opts out with `data-round`.
+ */
+*:not([data-round]):not(.rounded-full),
+*::before,
+*::after {
+  /* `!important` because Leaflet's stylesheet is imported per-component and
+     therefore lands *after* this file: its `.leaflet-popup-content-wrapper`
+     and friends carry the same specificity and would otherwise win on order.
+     This is the one declaration in the app allowed to shout. */
+  border-radius: 0 !important;
+}
+
+/*
+ * Leaflet's own chrome, brought onto the page.
+ *
+ * The map is the one surface drawn by somebody else, and out of the box it
+ * arrives as white boxes with soft shadows. The controls and popups are re-cut
+ * as panels: the same hairline, the same white, the same square corners as
+ * everything around them.
+ */
+.leaflet-container {
+  background: var(--panel-sunken);
+  font: inherit;
+}
+.leaflet-bar,
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip,
+.leaflet-control-attribution {
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  color: var(--foreground);
+  box-shadow: none;
+}
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--foreground);
+  text-decoration: none;
+}
+.leaflet-bar a:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.leaflet-control-attribution {
+  padding: 0 0.35rem;
+  font-size: 0.6rem;
+  color: var(--muted-foreground);
+}
+.leaflet-control-attribution a {
+  color: var(--muted-foreground);
+}

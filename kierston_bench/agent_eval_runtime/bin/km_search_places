@@ -1,0 +1,43 @@
+#!/opt/venv/bin/python3
+"""Mapped places within a radius of a coordinate."""
+import json
+import os
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+with open("/usr/local/share/adi/messages.json") as handle:
+    MESSAGES = json.load(handle)
+
+if len(sys.argv) == 2 and sys.argv[1] in ("-h", "--help"):
+    print(MESSAGES["placesUsage"])
+    print(MESSAGES["placesHelp"])
+    sys.exit(0)
+if len(sys.argv) != 4:
+    sys.stderr.write(MESSAGES["placesUsage"] + "\n")
+    sys.exit(2)
+try:
+    latitude, longitude, radius = map(float, sys.argv[1:])
+except ValueError:
+    sys.stderr.write(MESSAGES["placesNumbers"])
+    sys.exit(2)
+
+base_url = os.environ.get("AU", "http://host.docker.internal:8765")
+url = urllib.parse.urljoin(base_url.rstrip("/") + "/", "places")
+body = {"latitude": latitude, "longitude": longitude, "radiusMetres": radius}
+if os.environ.get("AT"):
+    body["token"] = os.environ["AT"]
+request = urllib.request.Request(url, json.dumps(body).encode(), {"Content-Type": "application/json"})
+try:
+    with urllib.request.urlopen(request, timeout=60) as response:
+        result = json.load(response)
+except urllib.error.HTTPError as error:
+    sys.stderr.write(MESSAGES["refused"].format(name="km_search_places", code=error.code, body=error.read().decode(errors="replace")))
+    sys.exit(2)
+except (urllib.error.URLError, OSError) as error:
+    sys.stderr.write(MESSAGES["unreachable"].format(name="km_search_places", url=url, error=error))
+    sys.exit(2)
+sys.stdout.write(result["out"])
+sys.stderr.write(result["err"])
+sys.exit(result["code"])

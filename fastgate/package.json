@@ -1,0 +1,29 @@
+{
+  "name": "fastgate",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ingest:dynamic": "bun run src/cli.ts ingest-dynamic",
+    "ingest:scenario": "bun run src/cli.ts ingest-scenario",
+    "annotate:scenario": "bun run src/cli.ts annotate-scenario",
+    "revert:scenario": "bun run src/cli.ts revert-scenario",
+    "list:scenarios": "bun run src/cli.ts list-scenarios",
+    "ingest:static": "bun run src/cli.ts ingest-static",
+    "ingest:cameras": "bun run src/cli.ts ingest-cameras",
+    "ingest:cells": "bun run src/cli.ts ingest-cells",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clickhouse/client": "^1.23.1",
+    "kierston-provider-rows": "workspace:*",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "@types/pg": "^8.15.5",
+    "dotenv": "^17.4.2",
+    "typescript": "^7.0.2"
+  }
+}

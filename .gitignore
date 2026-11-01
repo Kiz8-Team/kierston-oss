@@ -1,0 +1,85 @@
+# Sim data
+kierston/sim_data/
+kierston/sim_outputs/
+kierston/builds/
+
+# City sources, engine reference assets and jurisdiction bundles are packed
+# into one reproducible archive (kierston/init-inputs.tar.zst, which is
+# tracked). Keep the individual working copies local so a checkout only carries
+# the bundle. City profiles are not here: cities/*.toml is source.
+kierston/sources/
+# A bundle's rule file is source, not a download, so it is tracked; the
+# statute tables beside it ship in the archive.
+kierston/jurisdictions/*/*
+!kierston/jurisdictions/*/jurisdiction.toml
+# reference/ holds assets, except build/, which is the code that distils them.
+kierston/reference/*
+!kierston/reference/build/
+
+# Superseded local extracts, kept out of the way rather than deleted.
+kierston/_attic/
+
+# Python
+kierston/.venv/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+bun.lockb
+
+# Next.js / build output
+.next/
+out/
+*.tsbuildinfo
+tools/kierstonblue/.cache/
+
+# Iceberg baselines (generated locally)
+tools/iceberg/baselines/*.json
+
+# Generated benchmark run series, run outputs and KDI service call logs
+kierston_bench/run_series/
+kierston_bench/runs/
+kierston_bench/sweeps/
+kierston_bench/agent_eval_runtime/kdi_log/
+kierston_bench/agent_eval_runtime/scenario_lock/
+
+# macOS
+.DS_Store
+
+# Editor
+.idea/
+*.swp
+
+# Env: one .env.local at the project root serves every tool.
+.env
+.env.*
+!.env.example
+
+# Claude Code local settings and worktrees
+.claude/
+
+# Sim data export bundles dropped at the repo root
+/kierston_sim_data_*.tar.zst
+
+# OSMnx/Overpass response cache written by acquire/
+/cache/
+
+# Paper build outputs and scratch
+/paper/tmp/
+/paper/main.pdf
+/paper/*.aux
+/paper/*.bbl
+/paper/*.blg
+/paper/*.log
+/paper/*.out
+/paper/*.toc
+
+# Private day-file fetcher, kept local
+/tools/fetch-kdays.sh

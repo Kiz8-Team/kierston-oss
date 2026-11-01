@@ -1,0 +1,15 @@
+{
+  "name": "@kierston-bench/scoring",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "@types/node": "^26.0.0",
+    "typescript": "^5.9.0"
+  }
+}

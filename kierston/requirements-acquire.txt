@@ -1,0 +1,6 @@
+# Extra dependencies for acquire/ only, which fetches a new city's downloads.
+# Not needed to build or run Kierston; the archive already holds the outputs.
+# Pinned to match the `acquire` extra in pyproject.toml.
+-r requirements.txt
+osmnx==2.1.0
+folium==0.20.0

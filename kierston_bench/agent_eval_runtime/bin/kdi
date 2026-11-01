@@ -1,0 +1,43 @@
+#!/opt/venv/bin/python3
+"""Allentown Data Interface (`adi`) client."""
+import json
+import base64
+import os
+import sys
+import urllib.error
+import urllib.request
+
+with open("/usr/local/share/adi/messages.json") as handle:
+    MESSAGES = json.load(handle)
+
+url = os.environ.get("AU", "http://host.docker.internal:8765")
+body = {"args": sys.argv[1:]}
+if os.environ.get("AT"):
+    body["token"] = os.environ["AT"]
+body = json.dumps(body).encode()
+request = urllib.request.Request(url, body, {"Content-Type": "application/json"})
+try:
+    with urllib.request.urlopen(request, timeout=60) as response:
+        content_type = response.headers.get_content_type()
+        if content_type == "application/x-adi-stream+jsonl":
+            code = 1
+            for raw in response:
+                frame = json.loads(raw)
+                if frame["stream"] == "end":
+                    code = int(frame["code"])
+                    continue
+                data = base64.b64decode(frame["data"])
+                target = sys.stdout.buffer if frame["stream"] == "out" else sys.stderr.buffer
+                target.write(data)
+                target.flush()
+            sys.exit(code)
+        result = json.load(response)
+except urllib.error.HTTPError as error:
+    sys.stderr.write(MESSAGES["refused"].format(name="adi", code=error.code, body=error.read().decode(errors="replace")))
+    sys.exit(2)
+except (urllib.error.URLError, OSError) as error:
+    sys.stderr.write(MESSAGES["unreachable"].format(name="adi", url=url, error=error))
+    sys.exit(2)
+sys.stdout.write(result["out"])
+sys.stderr.write(result["err"])
+sys.exit(result["code"])

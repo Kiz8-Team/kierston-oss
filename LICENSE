@@ -1,0 +1,100 @@
+Kierston & KierstonBench
+Copyright (c) 2026 Andrew Semenov, Svyatoslav Dorofeev
+
+
+1. Project licence
+
+   The source code is licensed under the Apache License, Version 2.0. The full
+   text is in LICENSE-APACHE-2.0. This covers everything that is executed or
+   compiled: the simulation engine, the benchmark runner, the scenario DSL
+   and scripts, the task generators, the web interfaces, the tools and the
+   tests, together with the configuration and the city profile that drive
+   them.
+
+     https://www.apache.org/licenses/LICENSE-2.0
+
+   The generated data is licensed under the Creative Commons Attribution 4.0
+   International licence (CC BY 4.0). The full text is in LICENSE-CC-BY-4.0.
+   This covers:
+
+     - kierston/sim_data/ and the published sim_data archives, except the
+       files listed in section 2
+     - KDAY day exports (.bin), KSTATE checkpoints and KDIF scenario diffs
+     - benchmark tasks, runs and scores
+     - the documentation and the paper
+
+     https://creativecommons.org/licenses/by/4.0/
+
+   Attribution under either licence is satisfied by keeping this copyright
+   notice and naming the project. The citation in CITATION.cff is the
+   preferred form.
+
+   Sections 2 and 3 name the third-party inputs that carry their own terms.
+   Those terms take precedence for the files they list.
+
+
+2. Data redistributed under the Open Database License (ODbL) 1.0
+
+   The files below contain, or are adapted from, a substantial part of the
+   OpenStreetMap database, (c) OpenStreetMap contributors. They are a
+   Derivative Database under ODbL 1.0 and are made available under ODbL 1.0,
+   not under CC BY 4.0.
+
+     https://opendatacommons.org/licenses/odbl/1-0/
+     https://www.openstreetmap.org/copyright
+
+   Raw extracts, in kierston/init-inputs.tar.zst under sources/<city>/:
+
+     buildings_geom.json     Overpass building export
+     pois_export.json        Overpass point-of-interest export
+     topology.graphml        road network, downloaded with OSMnx
+     geocode_cache.json      Nominatim reverse-geocoding results
+
+   Files derived from them, in kierston/sim_data/ and in the published
+   sim_data archives:
+
+     buildings.json          building footprints, kinds, levels, addresses
+     dwellings.json          the dwelling stock, per OSM building
+     pois.json               the point-of-interest catalogue
+     car_graph.bin           the drivable road graph
+     workplaces.json         worksites, by OSM name and coordinate
+     schools.json            schools, by OSM name and coordinate
+     orgs.json               organisations with premises, by OSM name and
+                             coordinate
+
+   If you redistribute any of these files, or a database adapted from them,
+   you must keep the OpenStreetMap attribution and offer it under ODbL 1.0.
+
+
+3. Data redistributed under other third-party terms
+
+   kierston/init-inputs.tar.zst, sources/<city>/opencellid_local.json
+     Adapted from the OpenCelliD database, (c) Unwired Labs. Creative Commons
+     Attribution-ShareAlike 4.0 International.
+     https://creativecommons.org/licenses/by-sa/4.0/
+
+   kierston/reference/tac_table.json
+     Cut from MoazEb/tac-database. MIT licence; the copyright and permission
+     notice are at https://github.com/MoazEb/tac-database
+
+   The remaining third-party inputs are United States government works in the
+   public domain, or public records. ATTRIBUTION.md lists every source, what it
+   is used for and where it enters the pipeline.
+
+
+4. What sections 2 and 3 do not cover
+
+   Everything else falls under section 1 alone, as Apache 2.0 or CC BY 4.0. In particular, none of the
+   following is a Derivative Database of OpenStreetMap, and none of it is
+   offered under ODbL or CC BY-SA:
+
+     - the source code, which reads the data above and does not contain it
+     - the rest of kierston/sim_data/: population, identity, kinship, ties,
+       dockets, vehicles, holdings, accounts, devices, banking, towers and the
+       other generated records
+     - KDAY day exports (.bin), KSTATE checkpoints and KDIF scenario diffs
+     - benchmark tasks, runs, scores and the paper
+
+   Works produced using OpenStreetMap data still carry the attribution:
+   "Contains information from OpenStreetMap, (c) OpenStreetMap contributors,
+   made available under the Open Database License."

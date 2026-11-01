@@ -1,0 +1,39 @@
+{
+ "iceberg": 1,
+ "kind": "sleep",
+ "source": "sleep",
+ "recordedAt": "2026-08-03T10:32:11.290Z",
+ "provenance": {
+  "populationDigest": "e8edb5616b1437c9",
+  "seed": 20260728,
+  "dates": [
+   "2026-07-27",
+   "2026-07-31"
+  ],
+  "sample": "stride-400-plus-coordinated-roles"
+ },
+ "metrics": {
+  "sleep.duration": {
+   "t": "num",
+   "n": 1340,
+   "nulls": 0,
+   "min": 285,
+   "max": 702,
+   "mean": 554.8679,
+   "sd": 82.6648,
+   "sum": 743523,
+   "zeros": 0,
+   "negatives": 0,
+   "q": [
+    374,
+    420,
+    494,
+    554,
+    614,
+    702,
+    702
+   ],
+   "exact": true
+  }
+ }
+}

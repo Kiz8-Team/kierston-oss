@@ -1,0 +1,22 @@
+{
+  "name": "kierston-sim",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "module": "src/index.ts",
+  "scripts": {
+    "day": "bun run src/day.ts",
+    "check": "bun run src/day.ts --sample 4000",
+    "check:boundaries": "bun run scripts/check-boundaries.ts",
+    "audit:week": "bun run scripts/audit-week.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "kierston-records": "workspace:*"
+  }
+}

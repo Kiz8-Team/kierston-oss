@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use Kierston or KierstonBench, please cite the paper below."
+type: software
+title: "Kierston & KierstonBench"
+abstract: >-
+  Kierston is a deterministic simulation of a mid-sized American city and the
+  records its residents leave behind. KierstonBench evaluates language-model
+  agents on investigation tasks over those records.
+authors:
+  - family-names: Semenov
+    given-names: Andrew
+    email: ands@kiz8.team
+    orcid: "https://orcid.org/0009-0009-7047-5179"
+  - family-names: Dorofeev
+    given-names: Svyatoslav
+    email: sean@kiz8.team
+    orcid: "https://orcid.org/0009-0004-3480-1743"
+repository-code: "https://github.com/Kiz8-Team/kierston-oss"
+keywords:
+  - synthetic city
+  - agent benchmark
+  - simulation
+  - language model evaluation
+preferred-citation:
+  type: article
+  title: "Kierston & KierstonBench: Simulation of Allentown, PA and Evaluation of Language Models in Crime Investigation and Surveillance Tasks"
+  authors:
+    - family-names: Semenov
+      given-names: Andrew
+      orcid: "https://orcid.org/0009-0009-7047-5179"
+    - family-names: Dorofeev
+      given-names: Svyatoslav
+      orcid: "https://orcid.org/0009-0004-3480-1743"
+  year: 2026
+  status: preprint
